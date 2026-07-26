@@ -9,6 +9,9 @@ import {
 } from "@/lib/materials";
 import { createClient } from "@/lib/supabase/server";
 
+export const runtime = "nodejs";
+export const maxDuration = 60;
+
 export default async function MaterialsPage() {
   const supabase = await createClient();
   const { data: claimsData, error: claimsError } = await supabase.auth.getClaims();
@@ -22,7 +25,9 @@ export default async function MaterialsPage() {
     supabase.from("courses").select("id, title").order("created_at", { ascending: true }),
     supabase
       .from("documents")
-      .select("id, course_id, title, original_filename, storage_path, mime_type, byte_size, status, created_at")
+      .select(
+        "id, course_id, title, original_filename, storage_path, mime_type, byte_size, status, processing_error, created_at",
+      )
       .order("created_at", { ascending: false }),
   ]);
 
@@ -40,6 +45,7 @@ export default async function MaterialsPage() {
     mimeType: document.mime_type,
     byteSize: Number(document.byte_size),
     status: document.status as DocumentStatus,
+    processingError: document.processing_error,
     createdAt: document.created_at,
   }));
 

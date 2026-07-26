@@ -5,11 +5,21 @@ import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 
 import {
+  DocumentIngestionError,
+  extractDocumentSource,
+  userFacingIngestionError,
+} from "@/lib/document-ingestion";
+import {
+  COURSE_MATERIALS_BUCKET,
   getSupportedDocumentType,
   MAX_DOCUMENT_SIZE_BYTES,
   SUPPORTED_DOCUMENT_TYPES,
   type SupportedDocumentExtension,
 } from "@/lib/materials";
+import {
+  createAdminClient,
+  isDocumentProcessingConfigured,
+} from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
 type ActionError = { error: string };
@@ -41,6 +51,23 @@ type PrepareDocumentUploadResult =
       };
     }
   | ActionError;
+
+type ProcessDocumentResult =
+  | {
+      processed: {
+        sections: number;
+        chunks: number;
+      };
+    }
+  | ActionError;
+
+type ClaimedDocument = {
+  id: string;
+  storage_path: string;
+  mime_type: string;
+  byte_size: number | string;
+  processing_token: string;
+};
 
 const uuidPattern =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -186,6 +213,144 @@ export async function cancelPreparedDocument(documentId: string) {
   await authenticated.supabase.from("documents").delete().eq("id", documentId);
 }
 
+export async function processDocument(documentId: string): Promise<ProcessDocumentResult> {
+  const authenticated = await getAuthenticatedSupabase();
+
+  if ("error" in authenticated) {
+    return { error: authenticated.error };
+  }
+
+  if (!isValidUuid(documentId)) {
+    return { error: "That material could not be found." };
+  }
+
+  if (!isDocumentProcessingConfigured()) {
+    return {
+      error:
+        "Document processing is not configured yet. Add the server-only Supabase secret key, then try again.",
+    };
+  }
+
+  const { data: document, error: documentError } = await authenticated.supabase
+    .from("documents")
+    .select("id, status")
+    .eq("id", documentId)
+    .eq("owner_id", authenticated.userId)
+    .maybeSingle();
+
+  if (documentError || !document) {
+    return { error: "That material could not be found." };
+  }
+
+  if (document.status === "ready") {
+    return { error: "This material has already been processed." };
+  }
+
+  if (document.status === "processing") {
+    return { error: "This material is already being processed. Refresh in a moment." };
+  }
+
+  const admin = createAdminClient();
+  let processingToken: string | null = null;
+
+  try {
+    const { data: claimedData, error: claimError } = await admin
+      .rpc("claim_document_processing", {
+        p_document_id: documentId,
+        p_expected_owner_id: authenticated.userId,
+      })
+      .maybeSingle();
+    const claimed = claimedData as ClaimedDocument | null;
+
+    if (claimError || !claimed || !isValidUuid(claimed.processing_token)) {
+      return { error: "This material is unavailable for processing. Refresh the page and try again." };
+    }
+
+    processingToken = claimed.processing_token;
+    const expectedByteSize = Number(claimed.byte_size);
+
+    if (
+      !Number.isSafeInteger(expectedByteSize) ||
+      expectedByteSize < 1 ||
+      expectedByteSize > MAX_DOCUMENT_SIZE_BYTES
+    ) {
+      throw new DocumentIngestionError("The uploaded file could not be verified.");
+    }
+
+    const { data: file, error: downloadError } = await admin.storage
+      .from(COURSE_MATERIALS_BUCKET)
+      .download(claimed.storage_path);
+
+    if (downloadError || !file) {
+      throw new DocumentIngestionError(
+        "The uploaded file could not be found. Upload it again and retry processing.",
+      );
+    }
+
+    const bytes = new Uint8Array(await file.arrayBuffer());
+
+    if (bytes.byteLength !== expectedByteSize) {
+      throw new DocumentIngestionError("The uploaded file could not be verified. Upload it again.");
+    }
+
+    const extracted = await extractDocumentSource({
+      bytes,
+      mimeType: claimed.mime_type,
+    });
+    const { data: completed, error: completeError } = await admin.rpc(
+      "complete_document_ingestion",
+      {
+        p_document_id: documentId,
+        p_processing_token: processingToken,
+        p_sections: extracted.sections.map((section) => ({
+          section_index: section.sectionIndex,
+          page_number: section.pageNumber,
+          heading: section.heading,
+          source_text: section.sourceText,
+        })),
+        p_chunks: extracted.chunks.map((chunk) => ({
+          section_index: chunk.sectionIndex,
+          chunk_index: chunk.chunkIndex,
+          content: chunk.content,
+        })),
+      },
+    );
+
+    if (completeError) {
+      throw new DocumentIngestionError(
+        "The extracted source could not be saved. Please retry processing.",
+      );
+    }
+
+    if (completed !== true) {
+      return { error: "This material is no longer available for processing." };
+    }
+
+    revalidatePath("/materials");
+    revalidatePath("/dashboard");
+
+    return {
+      processed: {
+        sections: extracted.sections.length,
+        chunks: extracted.chunks.length,
+      },
+    };
+  } catch (error) {
+    const safeError = userFacingIngestionError(error);
+
+    if (processingToken) {
+      await admin.rpc("fail_document_ingestion", {
+        p_document_id: documentId,
+        p_processing_token: processingToken,
+        p_safe_error: safeError,
+      });
+    }
+
+    revalidatePath("/materials");
+    return { error: safeError };
+  }
+}
+
 export async function deleteDocument(documentId: string): Promise<{ error?: string }> {
   const authenticated = await getAuthenticatedSupabase();
 
@@ -208,7 +373,7 @@ export async function deleteDocument(documentId: string): Promise<{ error?: stri
   }
 
   const { error: storageError } = await authenticated.supabase.storage
-    .from("course-materials")
+    .from(COURSE_MATERIALS_BUCKET)
     .remove([document.storage_path]);
 
   if (storageError) {

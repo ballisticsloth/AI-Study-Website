@@ -14,6 +14,7 @@ import {
   cancelPreparedDocument,
   createCourse,
   deleteDocument,
+  processDocument,
   prepareDocumentUpload,
 } from "@/app/materials/actions";
 import {
@@ -154,7 +155,10 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
   const [notice, setNotice] = useState<Notice | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [processingDocumentId, setProcessingDocumentId] = useState<string | null>(null);
   const [deletingDocumentId, setDeletingDocumentId] = useState<string | null>(null);
+  const isProcessingSource = processingDocumentId !== null;
+  const isBusy = isUploading || isProcessingSource;
   const courses = [
     ...initialCourses,
     ...newlyCreatedCourses.filter(
@@ -289,13 +293,47 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
         fileInputRef.current.value = "";
       }
 
-      setNotice({
-        tone: "success",
-        message: "Material uploaded privately. It is queued for processing in the next build step.",
-      });
+      setProcessingDocumentId(prepared.document.id);
+      const processingResult = await processDocument(prepared.document.id);
+
+      if ("error" in processingResult) {
+        setNotice({
+          tone: "error",
+          message: `Material uploaded privately, but source processing needs attention: ${processingResult.error}`,
+        });
+      } else {
+        setNotice({
+          tone: "success",
+          message: `Material uploaded and processed into ${processingResult.processed.chunks} citation-ready source passages.`,
+        });
+      }
+
       router.refresh();
     } finally {
       setIsUploading(false);
+      setProcessingDocumentId(null);
+    }
+  }
+
+  async function handleProcess(document: DocumentSummary) {
+    setNotice(null);
+    setProcessingDocumentId(document.id);
+
+    try {
+      const result = await processDocument(document.id);
+
+      if ("error" in result) {
+        setNotice({ tone: "error", message: result.error });
+        return;
+      }
+
+      setNotice({
+        tone: "success",
+        message: `Source processing finished: ${result.processed.chunks} citation-ready passages are available.`,
+      });
+    } finally {
+      setProcessingDocumentId(null);
+      router.refresh();
     }
   }
 
@@ -373,8 +411,10 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
               <h2 className="text-xl font-semibold">Upload material</h2>
               <p className="mt-1 text-sm leading-6 text-[#565650]">PDF, DOCX, or TXT · up to 20 MB</p>
             </div>
-            {isUploading ? (
-              <span className="text-sm font-semibold text-[#264653]">{uploadProgress}%</span>
+            {isBusy ? (
+              <span className="text-sm font-semibold text-[#264653]">
+                {isProcessingSource ? "Processing source…" : `${uploadProgress}%`}
+              </span>
             ) : null}
           </div>
 
@@ -383,7 +423,7 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
               Existing course
               <select
                 className="h-11 rounded border border-black/20 bg-white px-3 text-base font-normal outline-none transition focus:border-[#264653] focus:ring-2 focus:ring-[#264653]/20"
-                disabled={isUploading}
+                disabled={isBusy}
                 onChange={(event) => setCourseChoice(event.target.value)}
                 value={courseChoice}
               >
@@ -401,7 +441,7 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
                 New course name
                 <input
                   className="h-11 rounded border border-black/20 px-3 text-base font-normal outline-none transition focus:border-[#264653] focus:ring-2 focus:ring-[#264653]/20"
-                  disabled={isUploading}
+                  disabled={isBusy}
                   maxLength={120}
                   onChange={(event) => setNewCourseTitle(event.target.value)}
                   placeholder="For example, Biology 10"
@@ -432,7 +472,7 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
                 ref={fileInputRef}
                 accept=".pdf,.docx,.txt,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain"
                 className="sr-only"
-                disabled={isUploading}
+                disabled={isBusy}
                 onChange={handleFileChange}
                 type="file"
               />
@@ -443,7 +483,7 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
             Material title
             <input
               className="h-11 rounded border border-black/20 px-3 text-base font-normal outline-none transition focus:border-[#264653] focus:ring-2 focus:ring-[#264653]/20"
-              disabled={isUploading}
+              disabled={isBusy}
               maxLength={255}
               onChange={(event) => {
                 setTitle(event.target.value);
@@ -455,11 +495,13 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
             />
           </label>
 
-          {isUploading ? (
+          {isBusy ? (
             <div className="mt-5 h-2 overflow-hidden rounded-full bg-[#e4e4df]" aria-label="Upload progress">
               <div
-                className="h-full bg-[#264653] transition-[width]"
-                style={{ width: `${uploadProgress}%` }}
+                className={`h-full bg-[#264653] transition-[width] ${
+                  isProcessingSource ? "w-full animate-pulse" : ""
+                }`}
+                style={isProcessingSource ? undefined : { width: `${uploadProgress}%` }}
               />
             </div>
           ) : null}
@@ -479,10 +521,10 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
 
           <button
             className="mt-6 rounded bg-[#264653] px-5 py-3 font-semibold text-white transition hover:bg-[#1d3741] disabled:cursor-not-allowed disabled:opacity-60"
-            disabled={isUploading}
+            disabled={isBusy}
             type="submit"
           >
-            {isUploading ? "Uploading…" : "Upload privately"}
+            {isProcessingSource ? "Processing source…" : isUploading ? "Uploading…" : "Upload privately"}
           </button>
         </form>
 
@@ -505,6 +547,8 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
                 const course = courses.find((item) => item.id === document.courseId);
                 const type = getSupportedDocumentType(document.originalFilename);
                 const isDeleting = deletingDocumentId === document.id;
+                const isProcessingThisDocument = processingDocumentId === document.id;
+                const canProcess = document.status === "uploading" || document.status === "failed";
 
                 return (
                   <article
@@ -524,10 +568,30 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
                       <p className="mt-1 truncate text-sm text-[#565650]">
                         {course?.title ?? "Private course"} · {document.originalFilename} · {formatFileSize(document.byteSize)}
                       </p>
+                      {document.status === "failed" && document.processingError ? (
+                        <p className="mt-2 max-w-xl text-sm leading-6 text-[#a13d27]">
+                          {document.processingError}
+                        </p>
+                      ) : null}
                     </div>
                     <div className="flex shrink-0 items-center gap-2">
+                      {canProcess ? (
+                        <button
+                          className="rounded border border-[#264653]/35 px-3 py-2 text-sm font-semibold text-[#264653] transition hover:bg-[#264653] hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+                          disabled={isBusy}
+                          onClick={() => handleProcess(document)}
+                          type="button"
+                        >
+                          {isProcessingThisDocument
+                            ? "Processing…"
+                            : document.status === "failed"
+                              ? "Retry processing"
+                              : "Process source"}
+                        </button>
+                      ) : null}
                       <button
                         className="rounded border border-black/25 px-3 py-2 text-sm font-semibold transition hover:bg-black hover:text-white"
+                        disabled={isBusy}
                         onClick={() => handleDownload(document)}
                         type="button"
                       >
@@ -535,7 +599,7 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
                       </button>
                       <button
                         className="rounded border border-[#b94c35]/35 px-3 py-2 text-sm font-semibold text-[#9a3926] transition hover:bg-[#b94c35] hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
-                        disabled={isDeleting}
+                        disabled={isDeleting || isBusy}
                         onClick={() => handleDelete(document)}
                         type="button"
                       >
@@ -564,7 +628,7 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
           </li>
           <li className="flex gap-3">
             <span className="grid size-6 shrink-0 place-items-center rounded-full bg-[#264653] text-xs font-bold text-white">3</span>
-            <span>Next, the app will extract and cite the material for worksheets, tests, and tutoring.</span>
+            <span>The app extracts page- or section-aware passages for future worksheets, tests, and tutoring.</span>
           </li>
         </ol>
         <div className="mt-7 rounded-lg border border-[#264653]/15 bg-[#f0f6f5] p-4 text-sm leading-6 text-[#264653]">

@@ -34,6 +34,7 @@ export type DocumentSummary = {
   mimeType: string;
   byteSize: number;
   status: DocumentStatus;
+  processingError: string | null;
   createdAt: string;
 };
 
