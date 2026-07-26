@@ -16,10 +16,26 @@ recreated and reviewed consistently.
 The first migration creates the initial app tables, enables Row Level Security,
 and creates the private `course-materials` storage bucket policy. The second
 migration makes parsed source material and document-processing status
-server-managed. Neither migration makes an uploaded file or database row public.
+server-managed. The third migration narrows document and Storage write rules so
+an upload must match a private document record owned by the same user. Neither
+migration makes an uploaded file or database row public.
 
 Do not manually edit the `storage` schema. Use the Storage API in application
 code to upload, move, or delete files.
+
+## Verify the private material bucket
+
+Open **Storage** > **course-materials** in the Supabase Dashboard and confirm
+that the bucket remains private. Its file limit should be **20 MB**, and its
+allowed MIME types should be exactly:
+
+- `application/pdf`
+- `application/vnd.openxmlformats-officedocument.wordprocessingml.document`
+- `text/plain`
+
+The first migration only creates this configuration if the bucket does not
+already exist, so this check is important when the bucket was first created in
+the Dashboard.
 
 ## Email-confirmation modes
 
