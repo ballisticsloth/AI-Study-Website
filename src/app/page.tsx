@@ -31,10 +31,10 @@ export default function Home() {
           </p>
           <div className="mt-9 flex flex-wrap gap-3">
             <Link
-              href="/sign-up"
+              href="/sign-in"
               className="rounded bg-[#264653] px-5 py-3 font-semibold text-white transition hover:bg-[#1d3741]"
             >
-              Create an account
+              Continue with Google
             </Link>
             <Link
               href="/sign-in"

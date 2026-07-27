@@ -113,31 +113,50 @@ The first migration only creates this configuration if the bucket does not
 already exist, so this check is important when the bucket was first created in
 the Dashboard.
 
-## Email-confirmation modes
+## Google sign-in
 
-New free-tier Supabase projects using Supabase's default email service cannot
-edit Auth email templates. Choose the mode that fits the stage of the project.
+AI Study uses Google for sign-in. Google verifies the user's identity and
+Supabase creates the application's secure session and private user ID. The
+application requests only the basic `openid`, `email`, and `profile` scopes; it
+does not receive access to a user's Google Drive, Google Classroom, or inbox.
 
-### Local development
+### One-time hosted-project setup
 
-While testing only on your own computer, open **Authentication** > **Providers**
-> **Email** and turn **Confirm email** off. The app will create a session
-immediately and take a new account to its private dashboard. Turn confirmation
-back on before the app is available to outside testers.
+1. In Google Cloud, create or select a project. In **Google Auth Platform**,
+   complete **Branding** with the app name and a support email.
+2. In **Audience**, choose **External** and leave the app in **Testing** for
+   this pre-alpha. Add your account and each invited tester as a test user.
+   Choose **Internal** only when every intended user belongs to one Google
+   Workspace organization that controls the project.
+3. In **Data Access**, ensure the basic `openid`, `email`, and `profile` scopes
+   are selected. Do not request Drive or Classroom scopes for this app yet.
+4. In **Clients**, create an OAuth client of type **Web application**. Add
+   `http://localhost:3000` to **Authorized JavaScript origins** while
+   developing locally.
+5. Add the exact callback URL displayed in Supabase under **Authentication** >
+   **Providers** > **Google** to Google's **Authorized redirect URIs**. It has
+   this form:
 
-### Pre-alpha and production
+   ```text
+   https://YOUR_PROJECT_REF.supabase.co/auth/v1/callback
+   ```
 
-Before people outside the Supabase project team create accounts, configure a
-custom SMTP provider in Supabase. It both enables editable templates and allows
-reliable delivery to external email addresses. Then configure the **Confirm
-signup** template's confirmation link as follows:
+6. Copy the Google Client ID and Client Secret into that Supabase Google
+   provider page, enable the provider, and save. The Client Secret stays in
+   Supabase; never put it in `.env.local`, commit it, or paste it into chat.
+7. In Supabase **Authentication** > **URL Configuration**, set the local Site
+   URL to `http://localhost:3000` and add this Redirect URL:
 
-```html
-<a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&amp;type=email">
-  Confirm your email address
-</a>
-```
+   ```text
+   http://localhost:3000/auth/callback
+   ```
 
-This sends the one-time token to the app's confirmation endpoint, which
-exchanges it for a secure session cookie and then sends the user to the
-dashboard.
+8. Test Google sign-in locally. Use the same verified Google email as any
+   existing password-based test account; Supabase will automatically link the
+   Google identity to that account so its private materials stay attached to
+   the same user ID. Only after this test works, disable the **Email** provider
+   in Supabase to make Google the sole sign-in method.
+
+When a production domain is available, add that domain to Google's Authorized
+JavaScript origins and add its `/auth/callback` URL to Supabase's Redirect URL
+allow list before deploying. Use HTTPS in production.
