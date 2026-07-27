@@ -4,14 +4,51 @@ The migrations in this folder define the AI Study Website database schema and
 privacy policies. They are committed to Git so the deployed database can be
 recreated and reviewed consistently.
 
-## Apply migrations
+## Push migrations from the terminal
 
-1. In the Supabase Dashboard, open **SQL Editor**.
-2. Create a new query.
-3. Apply each migration in filename order, starting with
-   `migrations/0001_initial_schema.sql`.
-4. Copy one complete migration into the query editor, click **Run**, and confirm
-   that it completes successfully before applying the next one.
+The project uses the official Supabase CLI as a development dependency. Once it
+has been linked to the hosted project, use these commands from the project root:
+
+```bash
+# Create the next timestamped migration file, then edit its SQL.
+npm run supabase:migration:new -- describe_your_change
+
+# Review the pending database changes without applying them.
+npm run supabase:migration:check
+
+# Apply pending migrations to the linked Supabase project.
+npm run supabase:push
+```
+
+`npm run supabase:push` is the everyday shortcut. It applies only migration
+files that have not already been recorded in Supabase's remote migration
+history. Always run the check command first for a meaningful schema change,
+then test the app and commit the new migration file with its related code.
+
+The one-time CLI bootstrap is intentionally separate: link the project, record
+the migrations that were previously applied manually, and verify that the local
+and remote histories match. Do not run `supabase db reset --linked`; it deletes
+the linked project's data.
+
+### One-time bootstrap for this existing project
+
+The first four migrations were already applied through the Dashboard before the
+CLI was added. After `npm run supabase:link` has linked the correct project,
+mark these known-good migrations as applied **once**. This updates only the
+CLI's migration history; it does not run their SQL a second time.
+
+```bash
+npx supabase migration repair --linked --status applied 20260726150000
+npx supabase migration repair --linked --status applied 20260726150100
+npx supabase migration repair --linked --status applied 20260726192500
+npx supabase migration repair --linked --status applied 20260726204900
+
+npm run supabase:migration:list
+```
+
+Only do this after confirming the remote project is the one used by this app
+and the existing upload/source-processing tests have passed. The final list
+should show the same four timestamps locally and remotely.
 
 The first migration creates the initial app tables, enables Row Level Security,
 and creates the private `course-materials` storage bucket policy. The second
@@ -22,13 +59,15 @@ fourth migration adds atomic, server-only processing functions for extracted
 source text. None of these migrations makes an uploaded file or database row
 public.
 
-`0004_secure_document_ingestion.sql` replaces one weaker foreign-key constraint
+`20260726204900_secure_document_ingestion.sql` replaces one weaker foreign-key constraint
 with a stronger same-document constraint. The SQL Editor may flag that as a
 destructive operation because it drops and recreates the constraint; it does
 not remove documents, original files, or source text.
 
-Do not manually edit the `storage` schema. Use the Storage API in application
-code to upload, move, or delete files.
+After the one-time CLI bootstrap, do not apply future schema changes through the
+Dashboard SQL Editor or Table Editor. Create a migration file locally and push
+it through the CLI instead. Use the Storage API in application code to upload,
+move, or delete files.
 
 ## Configure server-only source processing
 
