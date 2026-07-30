@@ -53,105 +53,116 @@ Prepare—without fully implementing—future entities for `classrooms`, `classr
 
 ## 4. Milestones
 
-### Milestone 0 — Project foundation
+**Status rule:** A task is checked only after it has been implemented and
+verified. A milestone is complete only when its exit criteria are checked.
+
+### Milestone 0 — Project foundation — In progress
 
 **Target:** July 24–26
 
-- Initialize the Next.js TypeScript project and lint/test tooling.
-- Configure Tailwind, component primitives, environment-variable handling, and project conventions.
-- Establish the visual foundation from the Figma wireframes: navigation, responsive page shell, typography scale, colors, buttons, and loading/empty/error states.
-- Create a deployed preview environment.
-- Create Supabase project, authentication setup, storage bucket, and initial migrations.
 
-**Exit criteria:** A deployed skeleton has working navigation, sign-in/sign-out, and an authenticated private dashboard shell.
+- [x] Initialize the Next.js TypeScript project and lint/test tooling.
+- [x] Configure Tailwind, environment-variable handling, and project conventions.
+- [ ] Add reusable component primitives and complete the visual foundation from the Figma wireframes: navigation, responsive page shell, typography scale, colors, buttons, and loading/empty/error states.
+- [ ] Create a deployed preview environment.
+- [x] Create the Supabase project, Google authentication setup, private storage bucket, and initial migrations.
 
-### Milestone 1 — Private material workspace
+**Exit criteria:** [ ] A deployed skeleton has working navigation, sign-in/sign-out, and an authenticated private dashboard shell.
+
+### Milestone 1 — Private material workspace — In progress
 
 **Target:** July 27–30
 
-- Implement courses/workspaces and document listing.
-- Add private PDF, DOCX, and TXT upload with client and server validation.
-- Create document storage policies and database row-level security.
-- Show upload, processing, ready, and failed status.
-- Implement deletion of a document and all its indexed content.
 
-**Exit criteria:** Each tester can upload supported material and only see their own files after signing in on another device.
+- [x] Implement private courses/workspaces and document listing.
+- [x] Add private PDF, DOCX, and TXT upload with client and server validation.
+- [x] Create document storage policies and database row-level security.
+- [x] Show upload, processing, ready, and failed status.
+- [x] Implement deletion of a document and all its indexed content.
 
-### Milestone 2 — Source ingestion and retrieval
+**Exit criteria:** [ ] Each tester can upload supported material and only see their own files after signing in on another device.
+
+### Milestone 2 — Source ingestion and retrieval — In progress
 
 **Target:** July 31–August 3
 
-- Extract content from the three supported file types.
-- Retain page metadata for PDFs and heading/section metadata for DOCX/TXT when available.
-- Split extracted text into coherent chunks.
-- Create embeddings and store them with source metadata.
-- Implement filtered similarity search scoped to the signed-in user and selected course/documents.
-- Build a simple source-inspection view for debugging citations.
 
-**Exit criteria:** A query returns relevant passages only from the selected user’s materials, with correct displayable citation data.
+- [x] Extract content from the three supported file types.
+- [x] Retain page metadata for PDFs and heading/section metadata for DOCX/TXT when available.
+- [x] Split extracted text into coherent chunks.
+- [ ] Create embeddings and store them with source metadata.
+- [ ] Implement filtered similarity search scoped to the signed-in user and selected course/documents.
+- [ ] Build a simple source-inspection view for debugging citations.
 
-### Milestone 3 — Assessment generation, editing, and printing
+**Exit criteria:** [ ] A query returns relevant passages only from the selected user’s materials, with correct displayable citation data.
+
+### Milestone 3 — Assessment generation, editing, and printing — Not started
 
 **Target:** August 4–7
 
-- Create the worksheet/test generation form: source selection, type, topic focus, question count, and level.
-- Send retrieved material and a structured generation request to the AI service.
-- Validate the returned assessment schema before storing it.
-- Build the assessment editor for titles, directions, questions, choices, answers, explanations, and citations.
-- Design the generation/editor screen to match the existing Figma wireframe style.
-- Build printer-friendly test and worksheet layouts, including answer-key handling.
 
-**Exit criteria:** A teacher can create, revise, save, reopen, and print both a multiple-choice test and a worksheet from an upload.
+- [ ] Create the worksheet/test generation form: source selection, type, topic focus, question count, and level.
+- [ ] Send retrieved material and a structured generation request to the AI service.
+- [ ] Validate the returned assessment schema before storing it.
+- [ ] Build the assessment editor for titles, directions, questions, choices, answers, explanations, and citations.
+- [ ] Design the generation/editor screen to match the existing Figma wireframe style.
+- [ ] Build printer-friendly test and worksheet layouts, including answer-key handling.
 
-### Milestone 4 — Guidance-first tutor
+**Exit criteria:** [ ] A teacher can create, revise, save, reopen, and print both a multiple-choice test and a worksheet from an upload.
+
+### Milestone 4 — Guidance-first tutor — Not started
 
 **Target:** August 8–10
 
-- Build the tutor screen using the Figma chat layout as the starting point.
-- Add conversation creation and message persistence.
-- Retrieve course passages for each relevant prompt.
-- Implement a tutor prompt that guides first, checks understanding, and only later provides a full answer.
-- Stream responses to the interface.
-- Render citation cards containing document title, page/section, and compact supporting excerpt.
-- Clearly label general-knowledge responses when no selected source supports them.
 
-**Exit criteria:** The tutor provides grounded hints with citations, does not expose its source selection across users, and handles no-source cases honestly.
+- [ ] Build the tutor screen using the Figma chat layout as the starting point.
+- [ ] Add conversation creation and message persistence.
+- [ ] Retrieve course passages for each relevant prompt.
+- [ ] Implement a tutor prompt that guides first, checks understanding, and only later provides a full answer.
+- [ ] Stream responses to the interface.
+- [ ] Render citation cards containing document title, page/section, and compact supporting excerpt.
+- [ ] Clearly label general-knowledge responses when no selected source supports them.
 
-### Milestone 5 — Pre-alpha hardening and real-user test
+**Exit criteria:** [ ] The tutor provides grounded hints with citations, does not expose its source selection across users, and handles no-source cases honestly.
+
+### Milestone 5 — Pre-alpha hardening and real-user test — In progress
 
 **Target:** August 11–12
 
-- Test complete flows with prepared PDF, DOCX, and TXT files.
-- Test with a small invited group creating real accounts and uploading their own allowed materials.
-- Add clear failure states, upload limits, generation quotas, and basic abuse/cost safeguards.
-- Run accessibility and print-layout checks.
-- Fix the highest-impact defects and publish the pre-alpha feedback form.
 
-**Pre-alpha acceptance criteria:** Selected testers can safely sign in, upload materials, generate/edit/print an assessment, and use the cited tutor without developer intervention.
+- [x] Test the upload and source-processing flow with prepared PDF, DOCX, and TXT files.
+- [ ] Test with a small invited group creating real accounts and uploading their own allowed materials.
+- [ ] Add clear failure states, upload limits, generation quotas, and basic abuse/cost safeguards.
+- [ ] Run accessibility and print-layout checks.
+- [ ] Fix the highest-impact defects and publish the pre-alpha feedback form.
 
-### Milestone 6 — Feedback-driven final product
+**Pre-alpha acceptance criteria:** [ ] Selected testers can safely sign in, upload materials, generate/edit/print an assessment, and use the cited tutor without developer intervention.
+
+### Milestone 6 — Feedback-driven final product — Not started
 
 **Target:** August 13–September 15
 
-- Triage tester feedback into defects, usability improvements, and deferred ideas.
-- Improve parsing quality, citation clarity, tutor guidance quality, and print design.
-- Add quality safeguards and regression tests for the most common generated-content failures.
-- Refine mobile responsiveness, accessibility, onboarding, empty states, and visual identity.
-- Write project documentation and prepare demo materials.
 
-**Exit criteria:** The core teacher workflow is dependable, visually coherent, and demonstrable with realistic content.
+- [ ] Triage tester feedback into defects, usability improvements, and deferred ideas.
+- [ ] Improve parsing quality, citation clarity, tutor guidance quality, and print design.
+- [ ] Add quality safeguards and regression tests for the most common generated-content failures.
+- [ ] Refine mobile responsiveness, accessibility, onboarding, empty states, and visual identity.
+- [ ] Write project documentation and prepare demo materials.
 
-### Milestone 7 — Final validation and capstone delivery
+**Exit criteria:** [ ] The core teacher workflow is dependable, visually coherent, and demonstrable with realistic content.
+
+### Milestone 7 — Final validation and capstone delivery — Not started
 
 **Target:** September 16–30
 
-- Conduct final end-to-end test sessions with representative course materials.
-- Verify privacy boundaries using two different user accounts.
-- Verify all generated materials can be edited, saved, reopened, and printed.
-- Produce final demo data, walkthrough script, architecture explanation, and known-limitations list.
-- Deploy the final version and freeze the release branch.
 
-**Exit criteria:** Final capstone build is deployed, documented, tested, and presentation-ready.
+- [ ] Conduct final end-to-end test sessions with representative course materials.
+- [ ] Verify privacy boundaries using two different user accounts.
+- [ ] Verify all generated materials can be edited, saved, reopened, and printed.
+- [ ] Produce final demo data, walkthrough script, architecture explanation, and known-limitations list.
+- [ ] Deploy the final version and freeze the release branch.
+
+**Exit criteria:** [ ] Final capstone build is deployed, documented, tested, and presentation-ready.
 
 ## 5. Implementation sequence within each feature
 
