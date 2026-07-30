@@ -147,6 +147,7 @@ verified. A milestone is complete only when its exit criteria are checked.
 - [ ] Improve parsing quality, citation clarity, tutor guidance quality, and print design.
 - [ ] Add quality safeguards and regression tests for the most common generated-content failures.
 - [ ] Refine mobile responsiveness, accessibility, onboarding, empty states, and visual identity.
+- [ ] Finalize privacy and data-retention policy, user-data disclosures, and permanent account deletion after the intended audience and launch scope are known.
 - [ ] Write project documentation and prepare demo materials.
 
 **Exit criteria:** [ ] The core teacher workflow is dependable, visually coherent, and demonstrable with realistic content.
