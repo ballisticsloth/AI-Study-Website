@@ -18,6 +18,19 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
+## Testing
+
+Run the automated unit and component tests once:
+
+```bash
+npm run test
+```
+
+For test-driven development, work in small slices: write one focused failing
+test for the behavior being added, implement only enough code to make it pass,
+then run `npm run test` and `npm run lint`. Use `npm run test:watch` while
+actively writing a test.
+
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
 ## Learn More
