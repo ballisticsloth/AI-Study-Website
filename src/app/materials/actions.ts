@@ -3,12 +3,20 @@
 import { randomUUID } from "node:crypto";
 
 import { revalidatePath } from "next/cache";
+import OpenAI from "openai";
 
 import {
   DocumentIngestionError,
   extractDocumentSource,
   userFacingIngestionError,
 } from "@/lib/document-ingestion";
+import {
+  createMockEmbeddings,
+  EmbeddingGenerationError,
+  generateEmbeddings,
+  resolveEmbeddingMode,
+  type EmbeddingMode,
+} from "@/lib/embeddings";
 import {
   COURSE_MATERIALS_BUCKET,
   getSupportedDocumentType,
@@ -57,6 +65,7 @@ type ProcessDocumentResult =
       processed: {
         sections: number;
         chunks: number;
+        embeddingMode: EmbeddingMode;
       };
     }
   | ActionError;
@@ -231,6 +240,31 @@ export async function processDocument(documentId: string): Promise<ProcessDocume
     };
   }
 
+  let embeddingMode: EmbeddingMode;
+
+  try {
+    embeddingMode = resolveEmbeddingMode(
+      process.env.AI_EMBEDDINGS_MODE,
+      process.env.NODE_ENV,
+    );
+  } catch (error) {
+    return {
+      error:
+        error instanceof EmbeddingGenerationError
+          ? error.message
+          : "AI source processing is not configured correctly.",
+    };
+  }
+
+  const openAiApiKey = process.env.OPENAI_API_KEY;
+
+  if (embeddingMode === "openai" && !openAiApiKey) {
+    return {
+      error:
+        "AI source processing is not configured yet. Add the server-only OpenAI API key, then try again.",
+    };
+  }
+
   const { data: document, error: documentError } = await authenticated.supabase
     .from("documents")
     .select("id, status")
@@ -297,6 +331,11 @@ export async function processDocument(documentId: string): Promise<ProcessDocume
       bytes,
       mimeType: claimed.mime_type,
     });
+    const sourceChunks = extracted.chunks.map((chunk) => chunk.content);
+    const embeddings =
+      embeddingMode === "mock"
+        ? createMockEmbeddings(sourceChunks)
+        : await generateEmbeddings(new OpenAI({ apiKey: openAiApiKey }), sourceChunks);
     const { data: completed, error: completeError } = await admin.rpc(
       "complete_document_ingestion",
       {
@@ -308,10 +347,11 @@ export async function processDocument(documentId: string): Promise<ProcessDocume
           heading: section.heading,
           source_text: section.sourceText,
         })),
-        p_chunks: extracted.chunks.map((chunk) => ({
+        p_chunks: extracted.chunks.map((chunk, index) => ({
           section_index: chunk.sectionIndex,
           chunk_index: chunk.chunkIndex,
           content: chunk.content,
+          embedding: embeddings[index],
         })),
       },
     );
@@ -333,10 +373,14 @@ export async function processDocument(documentId: string): Promise<ProcessDocume
       processed: {
         sections: extracted.sections.length,
         chunks: extracted.chunks.length,
+        embeddingMode,
       },
     };
   } catch (error) {
-    const safeError = userFacingIngestionError(error);
+    const safeError =
+      error instanceof EmbeddingGenerationError
+        ? error.message
+        : userFacingIngestionError(error);
 
     if (processingToken) {
       await admin.rpc("fail_document_ingestion", {

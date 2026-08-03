@@ -302,9 +302,14 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
           message: `Material uploaded privately, but source processing needs attention: ${processingResult.error}`,
         });
       } else {
+        const simulatedNote =
+          processingResult.processed.embeddingMode === "mock"
+            ? " Development mode: source matching is simulated."
+            : "";
+
         setNotice({
           tone: "success",
-          message: `Material uploaded and processed into ${processingResult.processed.chunks} citation-ready source passages.`,
+          message: `Material uploaded and processed into ${processingResult.processed.chunks} citation-ready source passages.${simulatedNote}`,
         });
       }
 
@@ -327,9 +332,14 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
         return;
       }
 
+      const simulatedNote =
+        result.processed.embeddingMode === "mock"
+          ? " Development mode: source matching is simulated."
+          : "";
+
       setNotice({
         tone: "success",
-        message: `Source processing finished: ${result.processed.chunks} citation-ready passages are available.`,
+        message: `Source processing finished: ${result.processed.chunks} citation-ready passages are available.${simulatedNote}`,
       });
     } finally {
       setProcessingDocumentId(null);
