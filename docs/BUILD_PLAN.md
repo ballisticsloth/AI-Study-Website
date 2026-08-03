@@ -90,7 +90,7 @@ verified. A milestone is complete only when its exit criteria are checked.
 - [x] Extract content from the three supported file types.
 - [x] Retain page metadata for PDFs and heading/section metadata for DOCX/TXT when available.
 - [x] Split extracted text into coherent chunks.
-- [ ] Create embeddings and store them with source metadata.
+- [x] Create embeddings and store them with source metadata.
 - [ ] Implement filtered similarity search scoped to the signed-in user and selected course/documents.
 - [ ] Build a simple source-inspection view for debugging citations.
 
