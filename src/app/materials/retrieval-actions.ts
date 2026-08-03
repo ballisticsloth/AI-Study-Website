@@ -5,13 +5,13 @@ import "server-only";
 import OpenAI from "openai";
 
 import {
-  createMockEmbeddings,
   EmbeddingGenerationError,
   generateEmbeddings,
   resolveEmbeddingMode,
   type EmbeddingMode,
 } from "@/lib/embeddings";
 import {
+  prepareMockTextSearch,
   prepareSourceSearch,
   SourceSearchInputError,
   validateSourceSearchInput,
@@ -138,10 +138,23 @@ export async function searchSourcePassages(
   }
 
   try {
-    const [queryEmbedding] =
-      embeddingMode === "mock"
-        ? createMockEmbeddings([validatedInput.query])
-        : await generateEmbeddings(new OpenAI({ apiKey: openAiApiKey }), [validatedInput.query]);
+    if (embeddingMode === "mock") {
+      const { data, error } = await supabase.rpc(
+        "match_document_chunks_by_text",
+        prepareMockTextSearch(validatedInput),
+      );
+
+      if (error) {
+        return { error: "We could not search those sources. Please try again." };
+      }
+
+      return { passages: mapSourcePassages(data), embeddingMode };
+    }
+
+    const [queryEmbedding] = await generateEmbeddings(
+      new OpenAI({ apiKey: openAiApiKey }),
+      [validatedInput.query],
+    );
     const { rpcArguments } = prepareSourceSearch(validatedInput, queryEmbedding);
     const { data, error } = await supabase.rpc("match_document_chunks", rpcArguments);
 

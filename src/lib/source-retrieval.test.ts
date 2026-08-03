@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { EMBEDDING_DIMENSIONS } from "./retrieval";
 import {
+  prepareMockTextSearch,
   SourceSearchInputError,
   prepareSourceSearch,
 } from "./source-retrieval";
@@ -41,6 +42,21 @@ describe("prepareSourceSearch", () => {
         embedding,
       ).rpcArguments.p_document_ids,
     ).toBeNull();
+  });
+
+  it("uses exact text search arguments for local mock mode", () => {
+    expect(
+      prepareMockTextSearch({
+        courseId,
+        documentIds: [firstDocumentId, firstDocumentId],
+        query: "  Cell structure  ",
+      }),
+    ).toEqual({
+      p_course_id: courseId,
+      p_document_ids: [firstDocumentId],
+      p_query: "Cell structure",
+      p_match_count: 6,
+    });
   });
 
   it("rejects malformed IDs and blank queries before an embedding is generated", () => {

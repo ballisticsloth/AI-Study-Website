@@ -105,3 +105,19 @@ export function prepareSourceSearch(
     },
   };
 }
+
+/**
+ * Creates the constrained RPC input for deterministic local text matching.
+ * It shares the same course and selected-document scope as semantic search.
+ */
+export function prepareMockTextSearch(input: SourceSearchInput) {
+  const validatedInput = validateSourceSearchInput(input);
+
+  return {
+    p_course_id: validatedInput.courseId,
+    p_document_ids:
+      validatedInput.documentIds.length > 0 ? validatedInput.documentIds : null,
+    p_query: validatedInput.query,
+    p_match_count: 6,
+  };
+}

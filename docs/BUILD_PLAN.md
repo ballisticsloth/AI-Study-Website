@@ -92,9 +92,9 @@ verified. A milestone is complete only when its exit criteria are checked.
 - [x] Split extracted text into coherent chunks.
 - [x] Create embeddings and store them with source metadata.
 - [x] Implement filtered similarity search scoped to the signed-in user and selected course/documents.
-- [ ] Build a simple source-inspection view for debugging citations.
+- [x] Build a simple source-inspection view for debugging citations.
 
-**Exit criteria:** [ ] A query returns relevant passages only from the selected user’s materials, with correct displayable citation data.
+**Exit criteria:** [x] A query returns relevant passages only from the selected user’s materials, with correct displayable citation data.
 
 ### Milestone 3 — Assessment generation, editing, and printing — Not started
 

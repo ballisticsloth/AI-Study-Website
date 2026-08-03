@@ -17,6 +17,7 @@ import {
   processDocument,
   prepareDocumentUpload,
 } from "@/app/materials/actions";
+import { SourceInspectionPanel } from "@/components/source-inspection-panel";
 import {
   COURSE_MATERIALS_BUCKET,
   documentStatusLabel,
@@ -622,6 +623,8 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
             </div>
           )}
         </div>
+
+        <SourceInspectionPanel courses={courses} documents={documents} />
       </section>
 
       <aside className="self-start rounded-xl border border-black/15 bg-white p-6 shadow-[0_12px_34px_rgba(0,0,0,0.05)] lg:sticky lg:top-6">
