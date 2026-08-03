@@ -91,7 +91,7 @@ verified. A milestone is complete only when its exit criteria are checked.
 - [x] Retain page metadata for PDFs and heading/section metadata for DOCX/TXT when available.
 - [x] Split extracted text into coherent chunks.
 - [x] Create embeddings and store them with source metadata.
-- [ ] Implement filtered similarity search scoped to the signed-in user and selected course/documents.
+- [x] Implement filtered similarity search scoped to the signed-in user and selected course/documents.
 - [ ] Build a simple source-inspection view for debugging citations.
 
 **Exit criteria:** [ ] A query returns relevant passages only from the selected user’s materials, with correct displayable citation data.

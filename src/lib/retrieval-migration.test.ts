@@ -35,4 +35,20 @@ describe("private vector retrieval migration", () => {
       "create index if not exists document_chunks_embedding_hnsw_idx",
     );
   });
+
+  it("applies ownership, course, and selected-document filters before ranking", () => {
+    const migration = readFileSync(migrationPath, "utf8");
+    const whereClause = migration.indexOf("where document_row.owner_id");
+    const orderBy = migration.indexOf("order by chunk.embedding");
+
+    expect(whereClause).toBeGreaterThan(-1);
+    expect(whereClause).toBeLessThan(orderBy);
+    expect(migration).toContain("course_row.owner_id = (select auth.uid())");
+    expect(migration).toContain("document_row.course_id = p_course_id");
+    expect(migration).toContain("chunk.document_id = any(p_document_ids)");
+    expect(migration).toContain(
+      "grant execute on function public.match_document_chunks",
+    );
+    expect(migration).toContain(") to authenticated;");
+  });
 });
