@@ -101,14 +101,14 @@ verified. A milestone is complete only when its exit criteria are checked.
 **Target:** August 4–7
 
 
-- [ ] Create the worksheet/test generation form: source selection, type, topic focus, question count, and level.
-- [ ] Send retrieved material and a structured generation request to the AI service.
-- [ ] Validate the returned assessment schema before storing it.
-- [ ] Build the assessment editor for titles, directions, questions, choices, answers, explanations, and citations.
-- [ ] Design the generation/editor screen to match the existing Figma wireframe style.
-- [ ] Build printer-friendly test and worksheet layouts, including answer-key handling.
+- [x] Create the worksheet/test generation form: source selection, type, topic focus, question count, and level.
+- [x] Send retrieved material and a structured generation request to the AI service.
+- [x] Validate the returned assessment schema before storing it.
+- [x] Build the assessment editor for titles, directions, questions, choices, answers, explanations, and citations.
+- [x] Design the generation/editor screen to match the existing Figma wireframe style.
+- [x] Build printer-friendly test and worksheet layouts, including answer-key handling.
 
-**Exit criteria:** [ ] A teacher can create, revise, save, reopen, and print both a multiple-choice test and a worksheet from an upload.
+**Exit criteria:** [x] A teacher can create, revise, save, reopen, and print both a multiple-choice test and a worksheet from an upload.
 
 ### Milestone 4 — Guidance-first tutor — Not started
 

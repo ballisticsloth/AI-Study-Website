@@ -3,7 +3,7 @@ import Link from "next/link";
 import { signOut } from "@/app/(auth)/actions";
 
 type WorkspaceNavProps = {
-  active: "home" | "materials";
+  active: "home" | "materials" | "assessments";
   avatarInitial: string;
 };
 
@@ -29,6 +29,9 @@ export function WorkspaceNav({ active, avatarInitial }: WorkspaceNavProps) {
           </Link>
           <Link href="/materials" className={navClassName(active === "materials")}>
             Materials
+          </Link>
+          <Link href="/assessments" className={navClassName(active === "assessments")}>
+            Assessments
           </Link>
           <span
             aria-label="AI tutor, coming soon"
