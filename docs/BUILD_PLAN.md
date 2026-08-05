@@ -110,20 +110,20 @@ verified. A milestone is complete only when its exit criteria are checked.
 
 **Exit criteria:** [x] A teacher can create, revise, save, reopen, and print both a multiple-choice test and a worksheet from an upload.
 
-### Milestone 4 — Guidance-first tutor — Not started
+### Milestone 4 — Guidance-first tutor — Complete
 
 **Target:** August 8–10
 
 
-- [ ] Build the tutor screen using the Figma chat layout as the starting point.
-- [ ] Add conversation creation and message persistence.
-- [ ] Retrieve course passages for each relevant prompt.
-- [ ] Implement a tutor prompt that guides first, checks understanding, and only later provides a full answer.
-- [ ] Stream responses to the interface.
-- [ ] Render citation cards containing document title, page/section, and compact supporting excerpt.
-- [ ] Clearly label general-knowledge responses when no selected source supports them.
+- [x] Build the tutor screen using the Figma chat layout as the starting point.
+- [x] Add conversation creation and message persistence.
+- [x] Retrieve course passages for each relevant prompt.
+- [x] Implement a tutor prompt that guides first, checks understanding, and only later provides a full answer.
+- [x] Stream responses to the interface.
+- [x] Render citation cards containing document title, page/section, and compact supporting excerpt.
+- [x] Clearly label general-knowledge responses when no selected source supports them.
 
-**Exit criteria:** [ ] The tutor provides grounded hints with citations, does not expose its source selection across users, and handles no-source cases honestly.
+**Exit criteria:** [x] The tutor provides grounded hints with citations, does not expose its source selection across users, and handles no-source cases honestly.
 
 ### Milestone 5 — Pre-alpha hardening and real-user test — In progress
 
