@@ -228,7 +228,7 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
     }
 
     if (!title.trim()) {
-      setNotice({ tone: "error", message: "Give this material a clear title." });
+      setNotice({ tone: "error", message: "Give this source a clear title." });
       return;
     }
 
@@ -300,7 +300,7 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
       if ("error" in processingResult) {
         setNotice({
           tone: "error",
-          message: `Material uploaded privately, but source processing needs attention: ${processingResult.error}`,
+          message: `Source uploaded privately, but processing needs attention: ${processingResult.error}`,
         });
       } else {
         const simulatedNote =
@@ -310,7 +310,7 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
 
         setNotice({
           tone: "success",
-          message: `Material uploaded and processed into ${processingResult.processed.chunks} citation-ready source passages.${simulatedNote}`,
+          message: `Source uploaded and processed into ${processingResult.processed.chunks} citation-ready passages.${simulatedNote}`,
         });
       }
 
@@ -388,7 +388,7 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
         return;
       }
 
-      setNotice({ tone: "success", message: "Material deleted." });
+      setNotice({ tone: "success", message: "Source deleted." });
       router.refresh();
     } finally {
       setDeletingDocumentId(null);
@@ -396,31 +396,33 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
   }
 
   return (
-    <div className="mx-auto grid max-w-6xl gap-8 px-6 py-10 lg:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.65fr)] lg:px-12 lg:py-14">
+    <div className="paper-grid mx-auto grid max-w-7xl gap-8 px-5 py-10 sm:px-8 lg:grid-cols-[minmax(0,1.38fr)_minmax(18rem,0.62fr)] lg:px-12 lg:py-14">
       <section>
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-sm font-semibold tracking-[0.14em] text-[#264653] uppercase">
-              Private workspace
+            <p className="inline-flex items-center gap-2 text-sm font-bold tracking-[0.14em] text-[var(--source-teal)] uppercase">
+              <span className="size-1.5 rounded-full bg-[var(--verified-green)]" />
+              Source library
             </p>
-            <h1 className="mt-2 text-4xl font-semibold tracking-tight">Course materials</h1>
-            <p className="mt-3 max-w-2xl leading-7 text-[#565650]">
-              Upload files for a course, keep them private, and prepare them for source-grounded study tools.
+            <h1 className="mt-3 text-4xl font-semibold tracking-[-0.045em] text-[var(--source-teal)] sm:text-5xl">Course sources</h1>
+            <p className="mt-4 max-w-2xl text-lg leading-8 text-[var(--muted)]">
+              Keep PDFs, documents, and notes private and organized by course, then prepare them for cited study tools.
             </p>
           </div>
-          <p className="rounded-full border border-[#264653]/20 bg-[#f0f6f5] px-3 py-1.5 text-sm font-medium text-[#264653]">
-            Only you can access these files
+          <p className="rounded-full border border-[var(--verified-green)]/25 bg-[#edf7f5] px-3 py-1.5 text-sm font-semibold text-[#20766b]">
+            Private course library
           </p>
         </div>
 
         <form
-          className="mt-8 rounded-xl border border-black/15 bg-white p-5 shadow-[0_12px_34px_rgba(0,0,0,0.05)] sm:p-7"
+          className="mt-8 rounded-xl border border-[var(--border)] bg-white p-5 shadow-[0_16px_45px_rgba(38,70,83,0.07)] sm:p-7"
           onSubmit={handleSubmit}
         >
           <div className="flex items-center justify-between gap-4">
             <div>
-              <h2 className="text-xl font-semibold">Upload material</h2>
-              <p className="mt-1 text-sm leading-6 text-[#565650]">PDF, DOCX, or TXT · up to 20 MB</p>
+              <p className="text-xs font-bold tracking-[0.14em] text-[var(--verified-green)] uppercase">Add to your library</p>
+              <h2 className="mt-1 text-xl font-semibold text-[var(--source-teal)]">Add a course source</h2>
+              <p className="mt-1 text-sm leading-6 text-[var(--muted)]">PDF, DOCX, or TXT · up to 20 MB</p>
             </div>
             {isBusy ? (
               <span className="text-sm font-semibold text-[#264653]">
@@ -462,14 +464,14 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
               </label>
             ) : (
               <div className="rounded border border-dashed border-black/15 bg-[#f7f7f5] px-3 py-2 text-sm leading-6 text-[#565650]">
-                Files stay organized in the selected course and are not shared automatically.
+                Sources stay organized in the selected course and are never shared automatically.
               </div>
             )}
           </div>
 
           <div className="mt-5">
             <label
-              className="flex min-h-40 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-[#264653]/35 bg-[#f0f6f5] px-5 py-7 text-center transition hover:border-[#264653] hover:bg-[#e8f0ef]"
+              className="flex min-h-40 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-[var(--verified-green)]/40 bg-[#f3f8f7] px-5 py-7 text-center transition hover:border-[var(--verified-green)] hover:bg-[#edf7f5]"
               onDragOver={(event) => event.preventDefault()}
               onDrop={handleDrop}
             >
@@ -491,7 +493,7 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
           </div>
 
           <label className="mt-5 grid gap-2 text-sm font-semibold">
-            Material title
+            Source title
             <input
               className="h-11 rounded border border-black/20 px-3 text-base font-normal outline-none transition focus:border-[#264653] focus:ring-2 focus:ring-[#264653]/20"
               disabled={isBusy}
@@ -531,29 +533,29 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
           ) : null}
 
           <button
-            className="mt-6 rounded bg-[#264653] px-5 py-3 font-semibold text-white transition hover:bg-[#1d3741] disabled:cursor-not-allowed disabled:opacity-60"
+            className="mt-6 bg-[var(--source-teal)] px-5 py-3 font-semibold text-white transition hover:bg-[var(--source-teal-dark)] disabled:cursor-not-allowed disabled:opacity-60"
             disabled={isBusy}
             type="submit"
           >
-            {isProcessingSource ? "Processing source…" : isUploading ? "Uploading…" : "Upload privately"}
+            {isProcessingSource ? "Processing source…" : isUploading ? "Uploading…" : "Add source privately"}
           </button>
         </form>
 
         <div className="mt-10">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <h2 className="text-2xl font-semibold tracking-tight">Your uploaded materials</h2>
-              <p className="mt-1 text-sm text-[#565650]">Original files are private and available to download.</p>
+              <h2 className="text-2xl font-semibold tracking-[-0.025em] text-[var(--source-teal)]">Your course sources</h2>
+              <p className="mt-1 text-sm text-[var(--muted)]">Original files stay private and available to download.</p>
             </div>
             <span className="text-sm text-[#6b6b67]">{documents.length} total</span>
           </div>
 
           {documents.length === 0 ? (
             <div className="mt-5 rounded-xl border border-dashed border-black/20 bg-white px-6 py-10 text-center text-[#565650]">
-              Your first uploaded file will appear here.
+              Your first course source will appear here.
             </div>
           ) : (
-            <div className="mt-5 overflow-hidden rounded-xl border border-black/15 bg-white">
+            <div className="mt-5 overflow-hidden rounded-xl border border-[var(--border)] bg-white shadow-[0_10px_30px_rgba(38,70,83,0.05)]">
               {documents.map((document) => {
                 const course = courses.find((item) => item.id === document.courseId);
                 const type = getSupportedDocumentType(document.originalFilename);
@@ -627,12 +629,14 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
         <SourceInspectionPanel courses={courses} documents={documents} />
       </section>
 
-      <aside className="self-start rounded-xl border border-black/15 bg-white p-6 shadow-[0_12px_34px_rgba(0,0,0,0.05)] lg:sticky lg:top-6">
-        <p className="text-sm font-semibold tracking-[0.14em] text-[#264653] uppercase">How it works</p>
-        <h2 className="mt-3 text-2xl font-semibold tracking-tight">Build a trustworthy source library.</h2>
-        <ol className="mt-6 space-y-5 text-sm leading-6 text-[#565650]">
+      <aside className="self-start overflow-hidden rounded-xl border border-[var(--border)] bg-white shadow-[0_12px_34px_rgba(38,70,83,0.06)] lg:sticky lg:top-6">
+        <div className="border-b border-[var(--border)] bg-[var(--source-teal)] p-6 text-white">
+          <p className="text-xs font-bold tracking-[0.14em] text-[#a9d9d2] uppercase">How it works</p>
+          <h2 className="mt-3 text-2xl font-semibold tracking-[-0.025em]">Build a trustworthy source library.</h2>
+        </div>
+        <ol className="space-y-5 p-6 text-sm leading-6 text-[var(--muted)]">
           <li className="flex gap-3">
-            <span className="grid size-6 shrink-0 place-items-center rounded-full bg-[#264653] text-xs font-bold text-white">1</span>
+            <span className="grid size-6 shrink-0 place-items-center rounded-full bg-[var(--source-teal)] text-xs font-bold text-white">1</span>
             <span>Choose or create a private course workspace.</span>
           </li>
           <li className="flex gap-3">
@@ -641,11 +645,11 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
           </li>
           <li className="flex gap-3">
             <span className="grid size-6 shrink-0 place-items-center rounded-full bg-[#264653] text-xs font-bold text-white">3</span>
-            <span>The app extracts page- or section-aware passages for future worksheets, tests, and tutoring.</span>
+            <span>StudySourced AI prepares page- or section-aware passages for assessments and tutoring.</span>
           </li>
         </ol>
-        <div className="mt-7 rounded-lg border border-[#264653]/15 bg-[#f0f6f5] p-4 text-sm leading-6 text-[#264653]">
-          Files are never public. Sharing with a class will be a separate, explicit feature later.
+        <div className="mx-6 mb-6 border-l-2 border-[var(--verified-green)] bg-[#f1f8f6] p-4 text-sm leading-6 text-[var(--source-teal)]">
+          Your sources are never public. You choose what each study tool can use.
         </div>
       </aside>
     </div>

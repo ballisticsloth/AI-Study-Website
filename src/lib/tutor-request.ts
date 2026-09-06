@@ -29,7 +29,7 @@ function cleanText(value: unknown) {
 /** Validates all browser-controlled fields before the server checks ownership. */
 export function validateTutorMessageRequest(value: unknown): TutorMessageRequest {
   if (!value || typeof value !== "object") {
-    throw new TutorRequestError("Send a tutor question with a course and selected material.");
+    throw new TutorRequestError("Send a tutor question with a course and selected sources.");
   }
   const input = value as Record<string, unknown>;
   const conversationId = input.conversationId === undefined || input.conversationId === null ? null : input.conversationId;
@@ -38,7 +38,7 @@ export function validateTutorMessageRequest(value: unknown): TutorMessageRequest
   }
   if (!isUuid(input.courseId)) throw new TutorRequestError("Choose a valid course before asking the tutor.");
   if (!Array.isArray(input.documentIds)) {
-    throw new TutorRequestError("Choose at least one ready material for this conversation.");
+    throw new TutorRequestError("Choose at least one ready source for this conversation.");
   }
   const documentIds = [...new Set(input.documentIds)];
   if (
@@ -46,7 +46,7 @@ export function validateTutorMessageRequest(value: unknown): TutorMessageRequest
     documentIds.length > MAX_TUTOR_SOURCE_DOCUMENTS ||
     documentIds.some((documentId) => !isUuid(documentId))
   ) {
-    throw new TutorRequestError("Choose at least one ready material for this conversation.");
+    throw new TutorRequestError("Choose at least one ready source for this conversation.");
   }
   const message = cleanText(input.message);
   if (!message) throw new TutorRequestError("Write a question or an idea you want to work through.");

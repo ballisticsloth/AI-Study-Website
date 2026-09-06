@@ -20,11 +20,10 @@ export default async function SignInPage({
 
   return (
     <>
-      <p className="text-sm font-semibold tracking-[0.14em] text-[#264653] uppercase">Welcome back</p>
-      <h1 className="mt-3 text-3xl font-semibold tracking-tight">Sign in to your workspace</h1>
-      <p className="mt-3 text-sm leading-6 text-[#565650]">
-        Use your Google account to access your private course materials, saved
-        assessments, and tutor conversations.
+      <p className="text-sm font-bold tracking-[0.14em] text-[var(--verified-green)] uppercase">Welcome back</p>
+      <h1 className="mt-3 text-3xl font-semibold tracking-[-0.035em] text-[var(--source-teal)]">Sign in to StudySourced AI</h1>
+      <p className="mt-3 text-base leading-7 text-[var(--muted)]">
+        Access your private course sources, saved assessments, and tutor conversations.
       </p>
 
       {error ? (
@@ -41,7 +40,7 @@ export default async function SignInPage({
       <GoogleSignInButton />
 
       <p className="mt-6 text-center text-sm text-[#565650]">
-        New to AI Study? Continue with Google to create your private workspace.
+        New to StudySourced AI? Continue with Google to create your private workspace.
       </p>
     </>
   );

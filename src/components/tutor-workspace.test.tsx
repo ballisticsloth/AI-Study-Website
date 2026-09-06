@@ -78,7 +78,7 @@ describe("TutorWorkspace", () => {
     fireEvent.change(screen.getByLabelText("Your question"), {
       target: { value: "What does a cell membrane do?" },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Send" }));
+    fireEvent.click(screen.getByRole("button", { name: "Ask tutor" }));
 
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledWith(

@@ -36,7 +36,7 @@ describe("AssessmentsWorkspace", () => {
     );
 
     expect(screen.getByRole("heading", { name: "Create an assessment" })).not.toBeNull();
-    expect(screen.getByRole("button", { name: "Generate draft" })).not.toBeNull();
+    expect(screen.getByRole("button", { name: "Generate editable draft" })).not.toBeNull();
     expect(screen.getByLabelText("Cell notes")).not.toBeNull();
   });
 });

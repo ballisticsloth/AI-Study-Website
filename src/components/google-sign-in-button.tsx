@@ -32,7 +32,7 @@ export function GoogleSignInButton() {
   return (
     <div className="mt-7">
       <button
-        className="flex w-full items-center justify-center gap-3 rounded-md border border-black/20 bg-white px-4 py-3 text-sm font-semibold text-[#191919] transition hover:bg-[#f7f7f5] focus:outline-none focus:ring-2 focus:ring-[#264653] focus:ring-offset-2 disabled:cursor-wait disabled:opacity-70"
+        className="flex w-full items-center justify-center gap-3 border border-[var(--border)] bg-white px-4 py-3 text-sm font-semibold text-[var(--source-teal)] transition hover:border-[var(--source-teal)] hover:bg-[#f8faf9] focus:outline-none disabled:cursor-wait disabled:opacity-70"
         disabled={isLoading}
         onClick={handleGoogleSignIn}
         type="button"

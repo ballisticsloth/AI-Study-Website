@@ -100,19 +100,18 @@ export function SourceInspectionPanel({ courses, documents }: SourceInspectionPa
   }
 
   return (
-    <section className="mt-10 rounded-xl border border-black/15 bg-white p-5 shadow-[0_12px_34px_rgba(0,0,0,0.05)] sm:p-7">
-      <p className="text-sm font-semibold tracking-[0.14em] text-[#264653] uppercase">
+    <section className="mt-10 rounded-xl border border-[var(--border)] bg-white p-5 shadow-[0_12px_34px_rgba(38,70,83,0.05)] sm:p-7">
+      <p className="text-xs font-bold tracking-[0.14em] text-[var(--verified-green)] uppercase">
         Source inspector
       </p>
-      <h2 className="mt-2 text-2xl font-semibold tracking-tight">Check the passages AI tools can cite</h2>
-      <p className="mt-2 max-w-2xl text-sm leading-6 text-[#565650]">
-        Search only your prepared materials to preview the compact, cited excerpts that future
-        worksheets and tutoring will use.
+      <h2 className="mt-2 text-2xl font-semibold tracking-[-0.025em] text-[var(--source-teal)]">Check the passages your study tools can cite</h2>
+      <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--muted)]">
+        Search your prepared sources to preview the compact, cited excerpts that assessments and tutoring can use.
       </p>
 
       {courses.length === 0 ? (
         <p className="mt-5 rounded bg-[#f7f7f5] px-3 py-2 text-sm leading-6 text-[#565650]">
-          Create a course and upload material before inspecting sources.
+          Create a course and add a source before inspecting citations.
         </p>
       ) : (
         <form className="mt-6" onSubmit={handleSubmit}>
@@ -151,14 +150,13 @@ export function SourceInspectionPanel({ courses, documents }: SourceInspectionPa
 
           {readyDocuments.length === 0 ? (
             <p className="mt-5 rounded bg-[#fff3cf] px-3 py-2 text-sm leading-6 text-[#765a00]">
-              Process at least one material in this course to inspect sources.
+              Process at least one source in this course to inspect citations.
             </p>
           ) : (
             <fieldset className="mt-5">
-              <legend className="text-sm font-semibold">Materials to search</legend>
+              <legend className="text-sm font-semibold">Sources to search</legend>
               <p className="mt-1 text-sm leading-6 text-[#565650]">
-                All ready materials are selected by default. Clear every box to search all ready
-                material in this course.
+                All ready sources are selected by default. Clear every box to search every ready source in this course.
               </p>
               <div className="mt-3 grid gap-2 sm:grid-cols-2">
                 {readyDocuments.map((document) => (
@@ -213,14 +211,17 @@ export function SourceInspectionPanel({ courses, documents }: SourceInspectionPa
 
           {searchState.passages.length === 0 ? (
             <p className="mt-4 rounded bg-[#f7f7f5] px-3 py-3 text-sm leading-6 text-[#565650]">
-              No passages met the match threshold. Try a different topic or select more material.
+              No passages met the match threshold. Try a different topic or select more sources.
             </p>
           ) : (
             <ol className="mt-4 grid gap-3">
               {searchState.passages.map((passage) => (
-                <li key={passage.id} className="rounded-lg border border-[#264653]/15 bg-[#f0f6f5] p-4">
-                  <p className="text-sm font-semibold text-[#264653]">{formatCitation(passage)}</p>
-                  <p className="mt-2 text-sm leading-6 text-[#30302d]">{passage.content}</p>
+                <li key={passage.id} className="border-l-2 border-[var(--verified-green)] bg-[#f3f8f7] p-4">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <p className="text-sm font-semibold text-[var(--source-teal)]">{formatCitation(passage)}</p>
+                    <span className="text-[0.68rem] font-bold tracking-[0.1em] text-[var(--verified-green)] uppercase">Verified source</span>
+                  </div>
+                  <p className="source-quote mt-2 text-sm leading-6 text-[#30302d]">{passage.content}</p>
                 </li>
               ))}
             </ol>

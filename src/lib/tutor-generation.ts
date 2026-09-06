@@ -90,7 +90,7 @@ function sourceLocation(passage: TutorSourcePassage) {
 }
 
 function generalKnowledgeLabel(content: string) {
-  const prefix = "General-knowledge response (not supported by the selected material):";
+  const prefix = "General-knowledge response (not supported by the selected sources):";
   return content.startsWith(prefix) ? content : `${prefix} ${content}`;
 }
 
@@ -137,7 +137,7 @@ export function createMockTutorReply(input: TutorGenerationInput): TutorReply {
       grounding: "general_knowledge",
       citations: [],
       content: generalKnowledgeLabel(
-        "I could not find a matching passage in the materials selected for this conversation. " +
+        "I could not find a matching passage in the sources selected for this conversation. " +
           "Try stating what you already know about the idea, then identify one part that feels uncertain.",
       ),
     };

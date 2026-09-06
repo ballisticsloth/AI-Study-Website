@@ -91,7 +91,7 @@ describe("SourceInspectionPanel", () => {
     render(<SourceInspectionPanel courses={courses} documents={[documents[1]]} />);
 
     expect(
-      screen.getByText("Process at least one material in this course to inspect sources."),
+      screen.getByText("Process at least one source in this course to inspect citations."),
     ).not.toBeNull();
     expect(
       (screen.getByRole("button", { name: "Find source passages" }) as HTMLButtonElement)

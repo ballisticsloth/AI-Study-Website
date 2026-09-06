@@ -89,7 +89,7 @@ export async function POST(request: Request) {
         ? conversation.source_document_ids.filter((id): id is string => typeof id === "string" && UUID_PATTERN.test(id))
         : [];
       if (!sameIds(savedDocumentIds, input.documentIds)) {
-        throw new TutorRouteError("This conversation is locked to its original materials. Start a new conversation to change them.");
+        throw new TutorRouteError("This conversation is locked to its original sources. Start a new conversation to change them.");
       }
     } else {
       const { data, error } = await supabase
@@ -117,7 +117,7 @@ export async function POST(request: Request) {
       .eq("status", "ready")
       .in("id", input.documentIds);
     if (documentsError || (documents ?? []).length !== input.documentIds.length) {
-      throw new TutorRouteError("Every conversation material must still be ready and belong to this course.");
+      throw new TutorRouteError("Every conversation source must still be ready and belong to this course.");
     }
 
     let generationMode: "mock" | "openai";

@@ -128,7 +128,7 @@ export async function createCourse(title: string): Promise<CreateCourseResult> {
     return { error: "We could not create that course. Please try again." };
   }
 
-  revalidatePath("/materials");
+  revalidatePath("/sources");
   revalidatePath("/dashboard");
 
   return { course: { id: data.id, title: data.title } };
@@ -230,7 +230,7 @@ export async function processDocument(documentId: string): Promise<ProcessDocume
   }
 
   if (!isValidUuid(documentId)) {
-    return { error: "That material could not be found." };
+    return { error: "That source could not be found." };
   }
 
   if (!isDocumentProcessingConfigured()) {
@@ -273,15 +273,15 @@ export async function processDocument(documentId: string): Promise<ProcessDocume
     .maybeSingle();
 
   if (documentError || !document) {
-    return { error: "That material could not be found." };
+    return { error: "That source could not be found." };
   }
 
   if (document.status === "ready") {
-    return { error: "This material has already been processed." };
+    return { error: "This source has already been processed." };
   }
 
   if (document.status === "processing") {
-    return { error: "This material is already being processed. Refresh in a moment." };
+    return { error: "This source is already being processed. Refresh in a moment." };
   }
 
   const admin = createAdminClient();
@@ -297,7 +297,7 @@ export async function processDocument(documentId: string): Promise<ProcessDocume
     const claimed = claimedData as ClaimedDocument | null;
 
     if (claimError || !claimed || !isValidUuid(claimed.processing_token)) {
-      return { error: "This material is unavailable for processing. Refresh the page and try again." };
+      return { error: "This source is unavailable for processing. Refresh the page and try again." };
     }
 
     processingToken = claimed.processing_token;
@@ -363,10 +363,10 @@ export async function processDocument(documentId: string): Promise<ProcessDocume
     }
 
     if (completed !== true) {
-      return { error: "This material is no longer available for processing." };
+      return { error: "This source is no longer available for processing." };
     }
 
-    revalidatePath("/materials");
+    revalidatePath("/sources");
     revalidatePath("/dashboard");
 
     return {
@@ -390,7 +390,7 @@ export async function processDocument(documentId: string): Promise<ProcessDocume
       });
     }
 
-    revalidatePath("/materials");
+    revalidatePath("/sources");
     return { error: safeError };
   }
 }
@@ -403,7 +403,7 @@ export async function deleteDocument(documentId: string): Promise<{ error?: stri
   }
 
   if (!isValidUuid(documentId)) {
-    return { error: "That material could not be found." };
+    return { error: "That source could not be found." };
   }
 
   const { data: document, error: documentError } = await authenticated.supabase
@@ -413,7 +413,7 @@ export async function deleteDocument(documentId: string): Promise<{ error?: stri
     .maybeSingle();
 
   if (documentError || !document) {
-    return { error: "That material could not be found." };
+    return { error: "That source could not be found." };
   }
 
   const { error: storageError } = await authenticated.supabase.storage
@@ -433,7 +433,7 @@ export async function deleteDocument(documentId: string): Promise<{ error?: stri
     return { error: "The file was removed, but its record could not be cleared. Please try again." };
   }
 
-  revalidatePath("/materials");
+  revalidatePath("/sources");
   revalidatePath("/dashboard");
 
   return {};

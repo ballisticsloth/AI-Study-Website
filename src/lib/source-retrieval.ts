@@ -72,7 +72,7 @@ export function validateSourceSearchInput(input: unknown): {
   }
 
   if (!Array.isArray(candidate.documentIds)) {
-    throw new SourceSearchInputError("Choose valid materials before searching your sources.");
+    throw new SourceSearchInputError("Choose valid sources before searching your course.");
   }
 
   const documentIds = [...new Set(candidate.documentIds)];
@@ -81,7 +81,7 @@ export function validateSourceSearchInput(input: unknown): {
     documentIds.length > MAX_SOURCE_SEARCH_DOCUMENTS ||
     documentIds.some((documentId) => !isValidUuid(documentId))
   ) {
-    throw new SourceSearchInputError("Choose valid materials before searching your sources.");
+    throw new SourceSearchInputError("Choose valid sources before searching your course.");
   }
 
   return { courseId: candidate.courseId, documentIds, query };

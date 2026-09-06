@@ -54,7 +54,7 @@ export function getSupportedDocumentType(filename: string) {
 export function documentTitleFromFilename(filename: string) {
   const lastDot = filename.lastIndexOf(".");
   const baseName = lastDot > 0 ? filename.slice(0, lastDot) : filename;
-  return baseName.trim() || "Untitled material";
+  return baseName.trim() || "Untitled source";
 }
 
 export function formatFileSize(byteSize: number) {

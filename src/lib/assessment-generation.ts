@@ -168,7 +168,7 @@ function validateGenerationInput(input: AssessmentGenerationInput) {
   );
 
   if (passages.length === 0) {
-    throw new AssessmentGenerationError("Choose material with citation-ready source passages.");
+    throw new AssessmentGenerationError("Choose sources with citation-ready passages.");
   }
 
   return {
@@ -198,11 +198,11 @@ function validateQuestion(question: AssessmentQuestionDraft, type: AssessmentTyp
 
 export function createMockAssessment(input: AssessmentGenerationInput): AssessmentDraft {
   const validated = validateGenerationInput(input);
-  const label = validated.topicFocus || "Course material";
+  const label = validated.topicFocus || "Course sources";
   const typeLabel = validated.type === "worksheet" ? "worksheet" : "multiple-choice test";
   const directions =
     validated.type === "worksheet"
-      ? `Answer each question using complete ideas. Use details from the course material where appropriate.`
+      ? `Answer each question using complete ideas. Use details from the course sources where appropriate.`
       : `Choose the best answer for each question.`;
 
   const questions = Array.from({ length: validated.questionCount }, (_, index) => {
@@ -224,7 +224,7 @@ export function createMockAssessment(input: AssessmentGenerationInput): Assessme
     const options = [
       statement,
       "The source says this topic has no important role.",
-      "The source states that this idea is unrelated to the course material.",
+      "The source states that this idea is unrelated to the selected course sources.",
       "The source explains that this process never affects anything else.",
     ];
     const correctIndex = index % options.length;

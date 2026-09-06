@@ -130,7 +130,7 @@ export async function generateAssessment(
     input.documentIds.length > 25 ||
     input.documentIds.some((id) => !isUuid(id))
   ) {
-    return { error: "Choose a course and at least one ready material." };
+    return { error: "Choose a course and at least one ready source." };
   }
 
   const documentIds = [...new Set(input.documentIds)];
@@ -151,7 +151,7 @@ export async function generateAssessment(
     .in("id", documentIds);
 
   if (documentsError || (documents ?? []).length !== documentIds.length) {
-    return { error: "Choose only ready materials from the selected course." };
+    return { error: "Choose only ready sources from the selected course." };
   }
 
   let generationMode: "mock" | "openai";
@@ -194,7 +194,7 @@ export async function generateAssessment(
     });
   }
 
-  if (passages.length === 0) return { error: "No citation-ready passages were found in those materials." };
+  if (passages.length === 0) return { error: "No citation-ready passages were found in those sources." };
 
   try {
     const generationInput = { ...input, topicFocus, passages };

@@ -53,7 +53,7 @@ export default async function MaterialsPage() {
 
   return (
     <main className="min-h-screen bg-[#f7f7f5] text-[#191919]">
-      <WorkspaceNav active="materials" avatarInitial={(email[0] ?? "A").toUpperCase()} />
+      <WorkspaceNav active="sources" avatarInitial={(email[0] ?? "A").toUpperCase()} />
       <MaterialsWorkspace initialCourses={courseSummaries} documents={documentSummaries} />
     </main>
   );

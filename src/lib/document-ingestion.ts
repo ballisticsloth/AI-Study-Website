@@ -337,7 +337,7 @@ function enforceExtractionLimits(sections: ExtractedDocumentSection[]) {
 
   if (totalCharacters > MAX_EXTRACTED_CHARACTERS) {
     throw new DocumentIngestionError(
-      "This file contains too much text to process at once. Split it into smaller materials and try again.",
+      "This file contains too much text to process at once. Split it into smaller sources and try again.",
     );
   }
 }
@@ -407,7 +407,7 @@ function createChunks(sections: ExtractedDocumentSection[]) {
 
   if (chunks.length > MAX_DOCUMENT_CHUNKS) {
     throw new DocumentIngestionError(
-      "This file creates too many source passages to process at once. Split it into smaller materials and try again.",
+      "This file creates too many source passages to process at once. Split it into smaller sources and try again.",
     );
   }
 
