@@ -100,26 +100,24 @@ export function SourceInspectionPanel({ courses, documents }: SourceInspectionPa
   }
 
   return (
-    <section className="mt-10 rounded-xl border border-[var(--border)] bg-white p-5 shadow-[0_12px_34px_rgba(38,70,83,0.05)] sm:p-7">
-      <p className="text-xs font-bold tracking-[0.14em] text-[var(--verified-green)] uppercase">
-        Source inspector
-      </p>
-      <h2 className="mt-2 text-2xl font-semibold tracking-[-0.025em] text-[var(--source-teal)]">Check the passages your study tools can cite</h2>
-      <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--muted)]">
+    <section className="ui-card mt-12 p-6 sm:p-8">
+      <p className="ui-eyebrow">Source inspector</p>
+      <h2 className="section-title mt-4">Check the passages your study tools can cite</h2>
+      <p className="mt-4 max-w-2xl text-sm leading-6 text-[var(--muted)]">
         Search your prepared sources to preview the compact, cited excerpts that assessments and tutoring can use.
       </p>
 
       {courses.length === 0 ? (
-        <p className="mt-5 rounded bg-[#f7f7f5] px-3 py-2 text-sm leading-6 text-[#565650]">
+        <p className="mt-5 rounded-[var(--radius)] bg-[#f7f7f5] px-3 py-2 text-sm leading-6 text-[#565650]">
           Create a course and add a source before inspecting citations.
         </p>
       ) : (
         <form className="mt-6" onSubmit={handleSubmit}>
-          <div className="grid gap-5 sm:grid-cols-2">
+          <div className="grid gap-6 sm:grid-cols-2">
             <label className="grid gap-2 text-sm font-semibold">
               Course
               <select
-                className="h-11 rounded border border-black/20 bg-white px-3 text-base font-normal outline-none transition focus:border-[#264653] focus:ring-2 focus:ring-[#264653]/20"
+                className="ui-control"
                 disabled={isSearching}
                 onChange={(event) => chooseCourse(event.target.value)}
                 value={courseId}
@@ -135,7 +133,7 @@ export function SourceInspectionPanel({ courses, documents }: SourceInspectionPa
             <label className="grid gap-2 text-sm font-semibold">
               Question or topic
               <input
-                className="h-11 rounded border border-black/20 px-3 text-base font-normal outline-none transition focus:border-[#264653] focus:ring-2 focus:ring-[#264653]/20"
+                className="ui-control"
                 disabled={!canSearch}
                 maxLength={1000}
                 onChange={(event) => {
@@ -149,7 +147,7 @@ export function SourceInspectionPanel({ courses, documents }: SourceInspectionPa
           </div>
 
           {readyDocuments.length === 0 ? (
-            <p className="mt-5 rounded bg-[#fff3cf] px-3 py-2 text-sm leading-6 text-[#765a00]">
+            <p className="mt-5 rounded-[var(--radius)] bg-[#fff3cf] px-3 py-2 text-sm leading-6 text-[#765a00]">
               Process at least one source in this course to inspect citations.
             </p>
           ) : (
@@ -162,7 +160,7 @@ export function SourceInspectionPanel({ courses, documents }: SourceInspectionPa
                 {readyDocuments.map((document) => (
                   <label
                     key={document.id}
-                    className="flex cursor-pointer items-start gap-3 rounded border border-black/15 bg-[#f7f7f5] px-3 py-3 text-sm leading-5"
+                    className="flex cursor-pointer items-start gap-3 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface-subtle)] px-4 py-3 text-sm leading-5"
                   >
                     <input
                       checked={selectedDocumentIds.includes(document.id)}
@@ -179,7 +177,7 @@ export function SourceInspectionPanel({ courses, documents }: SourceInspectionPa
           )}
 
           <button
-            className="mt-6 rounded bg-[#264653] px-5 py-3 font-semibold text-white transition hover:bg-[#1d3741] disabled:cursor-not-allowed disabled:opacity-60"
+            className="ui-button-primary mt-6"
             disabled={!canSearch}
             type="submit"
           >
@@ -189,7 +187,7 @@ export function SourceInspectionPanel({ courses, documents }: SourceInspectionPa
       )}
 
       {searchState.kind === "error" ? (
-        <p aria-live="polite" className="mt-5 rounded bg-[#fbe9e5] px-3 py-2 text-sm leading-6 text-[#8c311e]">
+        <p aria-live="polite" className="mt-6 rounded-[var(--radius)] bg-[#fbe9e5] px-4 py-3 text-sm leading-6 text-[#8c311e]">
           {searchState.message}
         </p>
       ) : null}
@@ -204,13 +202,13 @@ export function SourceInspectionPanel({ courses, documents }: SourceInspectionPa
           </div>
 
           {searchState.isMock ? (
-            <p className="mt-3 rounded bg-[#fff3cf] px-3 py-2 text-sm leading-6 text-[#765a00]">
+            <p className="mt-3 rounded-[var(--radius)] bg-[#fff3cf] px-3 py-2 text-sm leading-6 text-[#765a00]">
               Development mode: matching uses exact words, not AI semantics.
             </p>
           ) : null}
 
           {searchState.passages.length === 0 ? (
-            <p className="mt-4 rounded bg-[#f7f7f5] px-3 py-3 text-sm leading-6 text-[#565650]">
+            <p className="mt-4 rounded-[var(--radius)] bg-[#f7f7f5] px-3 py-3 text-sm leading-6 text-[#565650]">
               No passages met the match threshold. Try a different topic or select more sources.
             </p>
           ) : (

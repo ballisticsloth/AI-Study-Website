@@ -1,10 +1,16 @@
 import { redirect } from "next/navigation";
+import type { Metadata } from "next";
 
 import { TutorWorkspace } from "@/components/tutor-workspace";
 import { WorkspaceNav } from "@/components/workspace-nav";
 import { type CourseSummary, type DocumentStatus, type DocumentSummary } from "@/lib/materials";
 import { parseTutorConversation } from "@/lib/tutor";
 import { createClient } from "@/lib/supabase/server";
+
+export const metadata: Metadata = {
+  title: "Study Tutor | StudySourced AI",
+  description: "Ask about your course and receive citation-backed guidance from selected sources.",
+};
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -53,7 +59,7 @@ export default async function TutorPage() {
   const email = typeof claims.email === "string" ? claims.email : "";
 
   return (
-    <main className="min-h-screen bg-[#f7f7f5] text-[#191919]">
+    <main className="page-shell">
       <WorkspaceNav active="tutor" avatarInitial={(email[0] ?? "A").toUpperCase()} />
       <TutorWorkspace courses={courseItems} documents={documentItems} conversations={conversationItems} />
     </main>

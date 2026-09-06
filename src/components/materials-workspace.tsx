@@ -396,33 +396,28 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
   }
 
   return (
-    <div className="paper-grid mx-auto grid max-w-7xl gap-8 px-5 py-10 sm:px-8 lg:grid-cols-[minmax(0,1.38fr)_minmax(18rem,0.62fr)] lg:px-12 lg:py-14">
+    <div className="page-container paper-grid grid gap-8 py-16 lg:grid-cols-[minmax(0,1.38fr)_minmax(18rem,0.62fr)] lg:py-24">
       <section>
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="inline-flex items-center gap-2 text-sm font-bold tracking-[0.14em] text-[var(--source-teal)] uppercase">
-              <span className="size-1.5 rounded-full bg-[var(--verified-green)]" />
-              Source library
-            </p>
-            <h1 className="mt-3 text-4xl font-semibold tracking-[-0.045em] text-[var(--source-teal)] sm:text-5xl">Course sources</h1>
-            <p className="mt-4 max-w-2xl text-lg leading-8 text-[var(--muted)]">
+            <p className="ui-eyebrow">Source library</p>
+            <h1 className="page-title mt-6">Course sources</h1>
+            <p className="body-large mt-4 max-w-2xl">
               Keep PDFs, documents, and notes private and organized by course, then prepare them for cited study tools.
             </p>
           </div>
-          <p className="rounded-full border border-[var(--verified-green)]/25 bg-[#edf7f5] px-3 py-1.5 text-sm font-semibold text-[#20766b]">
-            Private course library
-          </p>
+          <p className="ui-badge">Private course library</p>
         </div>
 
         <form
-          className="mt-8 rounded-xl border border-[var(--border)] bg-white p-5 shadow-[0_16px_45px_rgba(38,70,83,0.07)] sm:p-7"
+          className="ui-card mt-8 p-6 sm:p-8"
           onSubmit={handleSubmit}
         >
           <div className="flex items-center justify-between gap-4">
             <div>
-              <p className="text-xs font-bold tracking-[0.14em] text-[var(--verified-green)] uppercase">Add to your library</p>
-              <h2 className="mt-1 text-xl font-semibold text-[var(--source-teal)]">Add a course source</h2>
-              <p className="mt-1 text-sm leading-6 text-[var(--muted)]">PDF, DOCX, or TXT · up to 20 MB</p>
+              <p className="ui-eyebrow">Add to your library</p>
+              <h2 className="mt-4 text-xl font-semibold text-[var(--source-teal)]">Add a course source</h2>
+              <p className="mt-2 text-sm leading-6 text-[var(--muted)]">PDF, DOCX, or TXT · up to 20 MB</p>
             </div>
             {isBusy ? (
               <span className="text-sm font-semibold text-[#264653]">
@@ -431,11 +426,11 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
             ) : null}
           </div>
 
-          <div className="mt-6 grid gap-5 sm:grid-cols-2">
+          <div className="mt-6 grid gap-6 sm:grid-cols-2">
             <label className="grid gap-2 text-sm font-semibold">
               Existing course
               <select
-                className="h-11 rounded border border-black/20 bg-white px-3 text-base font-normal outline-none transition focus:border-[#264653] focus:ring-2 focus:ring-[#264653]/20"
+                className="ui-control"
                 disabled={isBusy}
                 onChange={(event) => setCourseChoice(event.target.value)}
                 value={courseChoice}
@@ -453,7 +448,7 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
               <label className="grid gap-2 text-sm font-semibold">
                 New course name
                 <input
-                  className="h-11 rounded border border-black/20 px-3 text-base font-normal outline-none transition focus:border-[#264653] focus:ring-2 focus:ring-[#264653]/20"
+                  className="ui-control"
                   disabled={isBusy}
                   maxLength={120}
                   onChange={(event) => setNewCourseTitle(event.target.value)}
@@ -463,15 +458,15 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
                 />
               </label>
             ) : (
-              <div className="rounded border border-dashed border-black/15 bg-[#f7f7f5] px-3 py-2 text-sm leading-6 text-[#565650]">
+              <div className="rounded-[var(--radius)] border border-dashed border-[var(--border)] bg-[var(--surface-subtle)] px-4 py-3 text-sm leading-6 text-[var(--muted)]">
                 Sources stay organized in the selected course and are never shared automatically.
               </div>
             )}
           </div>
 
-          <div className="mt-5">
+          <div className="mt-6">
             <label
-              className="flex min-h-40 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-[var(--verified-green)]/40 bg-[#f3f8f7] px-5 py-7 text-center transition hover:border-[var(--verified-green)] hover:bg-[#edf7f5]"
+              className="flex min-h-40 cursor-pointer flex-col items-center justify-center rounded-[var(--radius)] border-2 border-dashed border-[var(--verified-green)]/40 bg-[#f3f8f7] px-6 py-8 text-center transition-colors hover:border-[var(--verified-green)] hover:bg-[#edf7f5]"
               onDragOver={(event) => event.preventDefault()}
               onDrop={handleDrop}
             >
@@ -492,10 +487,10 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
             </label>
           </div>
 
-          <label className="mt-5 grid gap-2 text-sm font-semibold">
+          <label className="mt-6 grid gap-2 text-sm font-semibold">
             Source title
             <input
-              className="h-11 rounded border border-black/20 px-3 text-base font-normal outline-none transition focus:border-[#264653] focus:ring-2 focus:ring-[#264653]/20"
+              className="ui-control"
               disabled={isBusy}
               maxLength={255}
               onChange={(event) => {
@@ -509,7 +504,7 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
           </label>
 
           {isBusy ? (
-            <div className="mt-5 h-2 overflow-hidden rounded-full bg-[#e4e4df]" aria-label="Upload progress">
+            <div className="mt-6 h-2 overflow-hidden rounded-full bg-[#e4e4df]" aria-label="Upload progress">
               <div
                 className={`h-full bg-[#264653] transition-[width] ${
                   isProcessingSource ? "w-full animate-pulse" : ""
@@ -522,7 +517,7 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
           {notice ? (
             <p
               aria-live="polite"
-              className={`mt-5 rounded px-3 py-2 text-sm leading-6 ${
+              className={`mt-6 rounded-[var(--radius)] px-4 py-3 text-sm leading-6 ${
                 notice.tone === "error"
                   ? "bg-[#fbe9e5] text-[#8c311e]"
                   : "bg-[#e6f4ee] text-[#1f6b51]"
@@ -533,7 +528,7 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
           ) : null}
 
           <button
-            className="mt-6 bg-[var(--source-teal)] px-5 py-3 font-semibold text-white transition hover:bg-[var(--source-teal-dark)] disabled:cursor-not-allowed disabled:opacity-60"
+            className="ui-button-primary mt-6"
             disabled={isBusy}
             type="submit"
           >
@@ -541,7 +536,7 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
           </button>
         </form>
 
-        <div className="mt-10">
+        <div className="mt-12">
           <div className="flex items-center justify-between gap-4">
             <div>
               <h2 className="text-2xl font-semibold tracking-[-0.025em] text-[var(--source-teal)]">Your course sources</h2>
@@ -551,11 +546,11 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
           </div>
 
           {documents.length === 0 ? (
-            <div className="mt-5 rounded-xl border border-dashed border-black/20 bg-white px-6 py-10 text-center text-[#565650]">
+            <div className="mt-6 rounded-[var(--radius)] border border-dashed border-[var(--border)] bg-white px-6 py-12 text-center text-[var(--muted)]">
               Your first course source will appear here.
             </div>
           ) : (
-            <div className="mt-5 overflow-hidden rounded-xl border border-[var(--border)] bg-white shadow-[0_10px_30px_rgba(38,70,83,0.05)]">
+            <div className="ui-card mt-6 overflow-hidden">
               {documents.map((document) => {
                 const course = courses.find((item) => item.id === document.courseId);
                 const type = getSupportedDocumentType(document.originalFilename);
@@ -566,14 +561,14 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
                 return (
                   <article
                     key={document.id}
-                    className="flex flex-col gap-4 border-b border-black/10 p-5 last:border-b-0 sm:flex-row sm:items-center sm:justify-between"
+                    className="flex flex-col gap-4 border-b border-[var(--border)] p-6 last:border-b-0 sm:flex-row sm:items-center sm:justify-between"
                   >
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="rounded bg-[#e8f0ef] px-2 py-1 text-xs font-bold tracking-wide text-[#264653]">
+                        <span className="rounded-[var(--radius)] bg-[#e8f0ef] px-2 py-1 text-xs font-bold tracking-wide text-[#264653]">
                           {type?.label ?? "FILE"}
                         </span>
-                        <span className={`rounded px-2 py-1 text-xs font-semibold ${statusClasses(document.status)}`}>
+                        <span className={`rounded-[var(--radius)] px-2 py-1 text-xs font-semibold ${statusClasses(document.status)}`}>
                           {documentStatusLabel(document.status)}
                         </span>
                       </div>
@@ -590,7 +585,7 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
                     <div className="flex shrink-0 items-center gap-2">
                       {canProcess ? (
                         <button
-                          className="rounded border border-[#264653]/35 px-3 py-2 text-sm font-semibold text-[#264653] transition hover:bg-[#264653] hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+                          className="ui-button-secondary min-h-10 px-3 py-2"
                           disabled={isBusy}
                           onClick={() => handleProcess(document)}
                           type="button"
@@ -603,7 +598,7 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
                         </button>
                       ) : null}
                       <button
-                        className="rounded border border-black/25 px-3 py-2 text-sm font-semibold transition hover:bg-black hover:text-white"
+                        className="ui-button-secondary min-h-10 px-3 py-2"
                         disabled={isBusy}
                         onClick={() => handleDownload(document)}
                         type="button"
@@ -611,7 +606,7 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
                         Download
                       </button>
                       <button
-                        className="rounded border border-[#b94c35]/35 px-3 py-2 text-sm font-semibold text-[#9a3926] transition hover:bg-[#b94c35] hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+                        className="ui-button-danger min-h-10 px-3 py-2"
                         disabled={isDeleting || isBusy}
                         onClick={() => handleDelete(document)}
                         type="button"
@@ -629,22 +624,22 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
         <SourceInspectionPanel courses={courses} documents={documents} />
       </section>
 
-      <aside className="self-start overflow-hidden rounded-xl border border-[var(--border)] bg-white shadow-[0_12px_34px_rgba(38,70,83,0.06)] lg:sticky lg:top-6">
+      <aside className="ui-card self-start overflow-hidden lg:sticky lg:top-6">
         <div className="border-b border-[var(--border)] bg-[var(--source-teal)] p-6 text-white">
           <p className="text-xs font-bold tracking-[0.14em] text-[#a9d9d2] uppercase">How it works</p>
           <h2 className="mt-3 text-2xl font-semibold tracking-[-0.025em]">Build a trustworthy source library.</h2>
         </div>
-        <ol className="space-y-5 p-6 text-sm leading-6 text-[var(--muted)]">
+        <ol className="space-y-4 p-6 text-sm leading-6 text-[var(--muted)]">
           <li className="flex gap-3">
             <span className="grid size-6 shrink-0 place-items-center rounded-full bg-[var(--source-teal)] text-xs font-bold text-white">1</span>
             <span>Choose or create a private course workspace.</span>
           </li>
           <li className="flex gap-3">
-            <span className="grid size-6 shrink-0 place-items-center rounded-full bg-[#264653] text-xs font-bold text-white">2</span>
+            <span className="grid size-6 shrink-0 place-items-center rounded-full bg-[var(--source-teal)] text-xs font-bold text-white">2</span>
             <span>Upload a supported source file and give it a clear title.</span>
           </li>
           <li className="flex gap-3">
-            <span className="grid size-6 shrink-0 place-items-center rounded-full bg-[#264653] text-xs font-bold text-white">3</span>
+            <span className="grid size-6 shrink-0 place-items-center rounded-full bg-[var(--source-teal)] text-xs font-bold text-white">3</span>
             <span>StudySourced AI prepares page- or section-aware passages for assessments and tutoring.</span>
           </li>
         </ol>

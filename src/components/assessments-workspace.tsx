@@ -25,8 +25,7 @@ function citationLabel(citation: SavedAssessment["questions"][number]["citations
     .join(" · ");
 }
 
-const controlClass =
-  "min-h-11 w-full border border-[var(--border)] bg-white px-3 text-base font-normal outline-none transition focus:border-[var(--source-teal)] disabled:bg-[#f3f3f0] disabled:text-[#777770]";
+const controlClass = "ui-control";
 
 export function AssessmentsWorkspace({ courses, documents, assessments: initialAssessments }: Props) {
   const [items, setItems] = useState(initialAssessments);
@@ -196,16 +195,16 @@ export function AssessmentsWorkspace({ courses, documents, assessments: initialA
   }
 
   return (
-    <div className="paper-grid min-h-[calc(100vh-4rem)] bg-[var(--background)] text-[var(--foreground)]">
-      <div className="mx-auto grid max-w-7xl gap-8 px-5 py-10 sm:px-8 lg:grid-cols-[20rem_minmax(0,1fr)] lg:px-12 lg:py-12">
-        <aside className="self-start overflow-hidden rounded-xl border border-[var(--border)] bg-white shadow-[0_12px_34px_rgba(38,70,83,0.06)] lg:sticky lg:top-6">
+    <div className="paper-grid min-h-[calc(100vh-72px)]">
+      <div className="page-container grid gap-8 py-16 lg:grid-cols-[20rem_minmax(0,1fr)] lg:py-24">
+        <aside className="ui-card self-start overflow-hidden lg:sticky lg:top-6">
           <div className="border-b border-[var(--border)] bg-[#fbfbf9] p-5">
-            <p className="text-xs font-bold tracking-[0.14em] text-[var(--verified-green)] uppercase">Assessment studio</p>
+            <p className="ui-eyebrow">Assessment studio</p>
             <h1 className="mt-2 text-2xl font-semibold tracking-[-0.025em] text-[var(--source-teal)]">Create an assessment</h1>
             <p className="mt-2 text-sm leading-6 text-[var(--muted)]">Create an editable assessment from the sources selected for this course.</p>
           </div>
 
-          <form className="space-y-5 p-5" onSubmit={handleGenerate}>
+          <form className="space-y-6 p-6" onSubmit={handleGenerate}>
             <label className="grid gap-2 text-sm font-semibold text-[var(--source-teal)]">
               Course
               <select className={controlClass} value={courseId} onChange={(event) => chooseCourse(event.target.value)}>
@@ -220,7 +219,7 @@ export function AssessmentsWorkspace({ courses, documents, assessments: initialA
               <p className="mt-1 text-xs leading-5 text-[var(--muted)]">Only selected sources will shape the draft.</p>
               <div className="mt-3 space-y-2">
                 {readyDocuments.map((document) => (
-                  <label className="flex gap-2.5 rounded-md border border-[var(--border)] bg-[#fbfbf9] px-3 py-2.5 text-sm" key={document.id}>
+                  <label className="flex gap-2 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface-subtle)] px-4 py-3 text-sm" key={document.id}>
                     <input
                       aria-label={document.title}
                       className="mt-0.5 size-4 accent-[var(--verified-green)]"
@@ -232,7 +231,7 @@ export function AssessmentsWorkspace({ courses, documents, assessments: initialA
                   </label>
                 ))}
                 {!readyDocuments.length ? (
-                  <p className="rounded-md bg-[#fff6df] px-3 py-2 text-sm leading-5 text-[#765a00]">Add and process a source before creating an assessment.</p>
+                  <p className="rounded-[var(--radius)] bg-[#fff6df] px-3 py-2 text-sm leading-5 text-[#765a00]">Add and process a source before creating an assessment.</p>
                 ) : null}
               </div>
             </fieldset>
@@ -250,7 +249,7 @@ export function AssessmentsWorkspace({ courses, documents, assessments: initialA
               <input className={controlClass} value={topicFocus} maxLength={240} onChange={(event) => setTopicFocus(event.target.value)} placeholder="For example, cell structure" />
             </label>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-4">
               <label className="grid gap-2 text-sm font-semibold text-[var(--source-teal)]">
                 Questions
                 <select className={controlClass} value={questionCount} onChange={(event) => setQuestionCount(Number(event.target.value))}>
@@ -266,7 +265,7 @@ export function AssessmentsWorkspace({ courses, documents, assessments: initialA
             </div>
 
             <button
-              className="w-full bg-[var(--source-teal)] px-4 py-3 font-semibold text-white transition hover:bg-[var(--source-teal-dark)] disabled:opacity-60"
+              className="ui-button-primary w-full"
               disabled={isGenerating || !courseId || selectedIds.length === 0}
               type="submit"
             >
@@ -274,7 +273,7 @@ export function AssessmentsWorkspace({ courses, documents, assessments: initialA
             </button>
           </form>
 
-          <div className="border-t border-[var(--border)] p-5">
+          <div className="border-t border-[var(--border)] p-6">
             <div className="flex items-center justify-between gap-3">
               <h2 className="font-semibold text-[var(--source-teal)]">Saved assessments</h2>
               <span className="text-xs text-[var(--muted)]">{items.length}</span>
@@ -285,7 +284,7 @@ export function AssessmentsWorkspace({ courses, documents, assessments: initialA
                   <button
                     key={item.id}
                     onClick={() => setActive(cloneAssessment(item))}
-                    className={`border px-3 py-2.5 text-left text-sm transition ${active?.id === item.id ? "border-[var(--verified-green)]/40 bg-[#edf7f5] text-[var(--source-teal)]" : "border-[var(--border)] hover:bg-[#f7f7f5]"}`}
+                    className={`rounded-[var(--radius)] border px-4 py-3 text-left text-sm transition-colors ${active?.id === item.id ? "border-[var(--verified-green)]/40 bg-[#edf7f5] text-[var(--source-teal)]" : "border-[var(--border)] hover:bg-[#f7f7f5]"}`}
                   >
                     {item.title}
                   </button>
@@ -299,13 +298,13 @@ export function AssessmentsWorkspace({ courses, documents, assessments: initialA
 
         <section>
           {notice ? (
-            <p className={`mb-4 border px-4 py-3 text-sm ${notice.tone === "error" ? "border-[var(--terracotta)]/30 bg-[#fff1ee] text-[#8c311e]" : "border-[var(--verified-green)]/30 bg-[#edf7f5] text-[#20766b]"}`}>
+            <p className={`mb-4 rounded-[var(--radius)] border px-4 py-3 text-sm ${notice.tone === "error" ? "border-[var(--terracotta)]/30 bg-[#fff1ee] text-[#8c311e]" : "border-[var(--verified-green)]/30 bg-[#edf7f5] text-[#20766b]"}`}>
               {notice.message}
             </p>
           ) : null}
 
           {!active ? (
-            <div className="grid min-h-[32rem] place-items-center rounded-xl border border-dashed border-[var(--border)] bg-white px-6 text-center">
+            <div className="grid min-h-[32rem] place-items-center rounded-[var(--radius)] border border-dashed border-[var(--border)] bg-white px-6 text-center">
               <div className="max-w-md">
                 <span className="mx-auto grid size-11 place-items-center rounded-full bg-[#edf7f5] text-lg font-semibold text-[var(--verified-green)]">＋</span>
                 <h2 className="mt-5 text-2xl font-semibold tracking-[-0.025em] text-[var(--source-teal)]">Create your first assessment</h2>
@@ -313,18 +312,15 @@ export function AssessmentsWorkspace({ courses, documents, assessments: initialA
               </div>
             </div>
           ) : (
-            <div className="rounded-xl border border-[var(--border)] bg-white shadow-[0_16px_45px_rgba(38,70,83,0.07)]">
-              <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[var(--border)] bg-[#fbfbf9] px-6 py-5 sm:px-8">
+            <div className="ui-card">
+              <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[var(--border)] bg-[var(--surface-subtle)] px-6 py-6 sm:px-8">
                 <div>
-                  <p className="inline-flex items-center gap-2 text-xs font-bold tracking-[0.14em] text-[var(--verified-green)] uppercase">
-                    <span className="size-1.5 rounded-full bg-[var(--verified-green)]" />
-                    Editable · teacher-reviewed
-                  </p>
+                  <p className="ui-eyebrow">Editable · teacher-reviewed</p>
                   <p className="mt-1 text-sm text-[var(--muted)]">Citations stay tied to their supporting source passages.</p>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  <Link className="border border-[var(--border)] px-3 py-2 text-sm font-semibold text-[var(--source-teal)] transition hover:border-[var(--source-teal)]" target="_blank" href={`/assessments/${active.id}/print`}>Student copy</Link>
-                  <Link className="border border-[var(--source-teal)]/35 px-3 py-2 text-sm font-semibold text-[var(--source-teal)] transition hover:bg-[#edf7f5]" target="_blank" href={`/assessments/${active.id}/print?answerKey=1`}>Answer key</Link>
+                  <Link className="ui-button-secondary" target="_blank" href={`/assessments/${active.id}/print`}>Student copy</Link>
+                  <Link className="ui-button-secondary" target="_blank" href={`/assessments/${active.id}/print?answerKey=1`}>Answer key</Link>
                 </div>
               </div>
 
@@ -335,26 +331,26 @@ export function AssessmentsWorkspace({ courses, documents, assessments: initialA
                 </label>
                 <label className="mt-5 grid gap-2 text-sm font-semibold text-[var(--source-teal)]">
                   Directions
-                  <textarea className="min-h-24 border border-[var(--border)] p-3 text-base font-normal leading-6 outline-none focus:border-[var(--source-teal)]" value={active.directions} onChange={(event) => setActive({ ...active, directions: event.target.value })} />
+                  <textarea className="ui-control min-h-24" value={active.directions} onChange={(event) => setActive({ ...active, directions: event.target.value })} />
                 </label>
 
                 <ol className="mt-8 grid gap-6">
                   {active.questions.map((question, index) => (
-                    <li key={question.id} className="overflow-hidden rounded-lg border border-[var(--border)]">
+                    <li key={question.id} className="overflow-hidden rounded-[var(--radius)] border border-[var(--border)]">
                       <div className="flex items-center justify-between gap-3 border-b border-[var(--border)] bg-[#fbfbf9] px-4 py-3">
                         <p className="text-sm font-semibold text-[var(--source-teal)]">Question {index + 1}</p>
                         <span className="text-xs text-[var(--muted)]">{question.questionType === "multiple_choice" ? "Multiple choice" : "Short answer"}</span>
                       </div>
-                      <div className="p-4 sm:p-5">
+                      <div className="p-6">
                         <label className="grid gap-2 text-sm font-semibold text-[var(--source-teal)]">
                           Prompt
-                          <textarea className="min-h-20 border border-[var(--border)] p-3 text-base font-normal leading-6 outline-none focus:border-[var(--source-teal)]" value={question.prompt} onChange={(event) => updateQuestion(index, "prompt", event.target.value)} />
+                          <textarea className="ui-control min-h-20" value={question.prompt} onChange={(event) => updateQuestion(index, "prompt", event.target.value)} />
                         </label>
 
                         {question.questionType === "multiple_choice" ? (
-                          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                          <div className="mt-4 grid gap-4 sm:grid-cols-2">
                             {question.options.map((option, optionIndex) => (
-                              <label className="grid gap-1.5 text-sm font-medium text-[var(--muted)]" key={optionIndex}>
+                              <label className="grid gap-2 text-sm font-medium text-[var(--muted)]" key={optionIndex}>
                                 Choice {"ABCD"[optionIndex]}
                                 <input className={controlClass} value={option} onChange={(event) => updateOption(index, optionIndex, event.target.value)} />
                               </label>
@@ -365,11 +361,11 @@ export function AssessmentsWorkspace({ courses, documents, assessments: initialA
                         <div className="mt-4 grid gap-4 sm:grid-cols-2">
                           <label className="grid gap-2 text-sm font-semibold text-[var(--source-teal)]">
                             Answer key
-                            <textarea className="min-h-24 border border-[var(--border)] p-3 text-base font-normal leading-6 outline-none focus:border-[var(--source-teal)]" value={question.correctAnswer} onChange={(event) => updateQuestion(index, "correctAnswer", event.target.value)} />
+                            <textarea className="ui-control min-h-24" value={question.correctAnswer} onChange={(event) => updateQuestion(index, "correctAnswer", event.target.value)} />
                           </label>
                           <label className="grid gap-2 text-sm font-semibold text-[var(--source-teal)]">
                             Explanation
-                            <textarea className="min-h-24 border border-[var(--border)] p-3 text-base font-normal leading-6 outline-none focus:border-[var(--source-teal)]" value={question.explanation} onChange={(event) => updateQuestion(index, "explanation", event.target.value)} />
+                            <textarea className="ui-control min-h-24" value={question.explanation} onChange={(event) => updateQuestion(index, "explanation", event.target.value)} />
                           </label>
                         </div>
 
@@ -388,8 +384,8 @@ export function AssessmentsWorkspace({ courses, documents, assessments: initialA
                 </ol>
 
                 <div className="mt-8 flex flex-wrap items-center gap-3 border-t border-[var(--border)] pt-6">
-                  <button onClick={handleSave} disabled={isSaving || isDeleting} className="bg-[var(--source-teal)] px-5 py-3 font-semibold text-white transition hover:bg-[var(--source-teal-dark)] disabled:opacity-60">{isSaving ? "Saving…" : "Save changes"}</button>
-                  <button onClick={handleDelete} disabled={isSaving || isDeleting} className="border border-[var(--terracotta)]/40 px-5 py-3 font-semibold text-[#9a3926] transition hover:bg-[#fff1ee] disabled:opacity-60">{isDeleting ? "Deleting…" : "Delete assessment"}</button>
+                  <button onClick={handleSave} disabled={isSaving || isDeleting} className="ui-button-primary">{isSaving ? "Saving…" : "Save changes"}</button>
+                  <button onClick={handleDelete} disabled={isSaving || isDeleting} className="ui-button-danger">{isDeleting ? "Deleting…" : "Delete assessment"}</button>
                   <p className="text-sm text-[var(--muted)] sm:ml-auto">Review every detail before use.</p>
                 </div>
               </div>

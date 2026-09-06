@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import type { Metadata } from "next";
 
 import { MaterialsWorkspace } from "@/components/materials-workspace";
 import { WorkspaceNav } from "@/components/workspace-nav";
@@ -8,6 +9,11 @@ import {
   type DocumentSummary,
 } from "@/lib/materials";
 import { createClient } from "@/lib/supabase/server";
+
+export const metadata: Metadata = {
+  title: "Sources | StudySourced AI",
+  description: "Keep private course sources organized and ready for cited study tools.",
+};
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -52,7 +58,7 @@ export default async function MaterialsPage() {
   const email = typeof claims.email === "string" ? claims.email : "";
 
   return (
-    <main className="min-h-screen bg-[#f7f7f5] text-[#191919]">
+    <main className="page-shell">
       <WorkspaceNav active="sources" avatarInitial={(email[0] ?? "A").toUpperCase()} />
       <MaterialsWorkspace initialCourses={courseSummaries} documents={documentSummaries} />
     </main>

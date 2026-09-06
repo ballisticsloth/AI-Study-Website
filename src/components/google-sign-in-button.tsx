@@ -30,9 +30,9 @@ export function GoogleSignInButton() {
   }
 
   return (
-    <div className="mt-7">
+    <div className="mt-8">
       <button
-        className="flex w-full items-center justify-center gap-3 border border-[var(--border)] bg-white px-4 py-3 text-sm font-semibold text-[var(--source-teal)] transition hover:border-[var(--source-teal)] hover:bg-[#f8faf9] focus:outline-none disabled:cursor-wait disabled:opacity-70"
+        className="ui-button-secondary w-full disabled:cursor-wait"
         disabled={isLoading}
         onClick={handleGoogleSignIn}
         type="button"
@@ -48,7 +48,7 @@ export function GoogleSignInButton() {
 
       {error ? (
         <p
-          className="mt-4 rounded-md border border-[#b9452d]/30 bg-[#fff1ee] px-3 py-2 text-sm text-[#8f321f]"
+          className="mt-4 rounded-[var(--radius)] border border-[#b9452d]/30 bg-[#fff1ee] px-4 py-3 text-sm text-[#8f321f]"
           role="alert"
         >
           {error}

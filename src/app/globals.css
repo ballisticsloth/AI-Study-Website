@@ -2,16 +2,32 @@
 
 :root {
   --background: #f7f7f5;
+  --surface: #ffffff;
+  --surface-subtle: #fbfbf9;
   --foreground: #191919;
   --muted: #565650;
-  --surface: #ffffff;
   --border: #d9d9d4;
   --source-teal: #264653;
   --source-teal-dark: #1d3741;
   --verified-green: #2a9d8f;
   --study-gold: #e9c46a;
   --terracotta: #e76f51;
-  --accent: var(--source-teal);
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  --radius: 0.5rem;
+  --container: 72rem;
+  --shadow-card: 0 1px 2px rgba(38, 70, 83, 0.04), 0 10px 24px rgba(38, 70, 83, 0.05);
+  --shadow-raised: 0 2px 4px rgba(38, 70, 83, 0.05), 0 16px 36px rgba(38, 70, 83, 0.08);
 }
 
 @theme inline {
@@ -21,54 +37,72 @@
 }
 
 * {
+  box-sizing: border-box;
   border-color: var(--border);
 }
 
-html {
-  background: var(--background);
-}
+html { background: var(--background); }
 
 body {
+  margin: 0;
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), "Helvetica Neue", Arial, sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
   text-rendering: optimizeLegibility;
 }
 
-button,
-a,
-input,
-select,
-textarea {
-  border-radius: 0.375rem;
-}
+button, input, select, textarea { font: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
 
-button,
-a {
-  -webkit-tap-highlight-color: transparent;
-}
-
-button:focus-visible,
-a:focus-visible,
-input:focus-visible,
-select:focus-visible,
-textarea:focus-visible {
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
   outline: 2px solid var(--verified-green);
   outline-offset: 3px;
 }
 
-::selection {
-  background: color-mix(in srgb, var(--study-gold) 60%, white);
-  color: var(--foreground);
-}
+::selection { background: color-mix(in srgb, var(--study-gold) 60%, white); color: var(--foreground); }
+
+.page-shell { min-height: 100vh; background: var(--background); color: var(--foreground); }
+.page-container { width: min(100% - 3rem, var(--container)); margin-inline: auto; }
 
 .paper-grid {
-  background-image:
-    linear-gradient(to right, rgba(38, 70, 83, 0.035) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(38, 70, 83, 0.035) 1px, transparent 1px);
-  background-size: 34px 34px;
+  background-image: linear-gradient(to right, rgba(38, 70, 83, 0.025) 1px, transparent 1px), linear-gradient(to bottom, rgba(38, 70, 83, 0.025) 1px, transparent 1px);
+  background-size: 64px 64px;
 }
 
-.source-quote {
-  font-family: Georgia, "Times New Roman", serif;
+.ui-card { border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow-card); }
+.ui-card-raised { border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow-raised); }
+
+.ui-control {
+  width: 100%; min-height: 3rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); color: var(--foreground); padding: 0.75rem 1rem; font-size: 1rem; font-weight: 400; line-height: 1.5; outline: none; transition: border-color 160ms ease, box-shadow 160ms ease;
 }
+.ui-control::placeholder { color: #777770; }
+.ui-control:hover:not(:disabled) { border-color: color-mix(in srgb, var(--source-teal) 45%, var(--border)); }
+.ui-control:focus { border-color: var(--source-teal); box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.14); }
+.ui-control:disabled { cursor: not-allowed; background: #f1f1ee; color: #777770; }
+
+.ui-button, .ui-button-primary, .ui-button-secondary, .ui-button-inverse, .ui-button-danger {
+  display: inline-flex; min-height: 3rem; align-items: center; justify-content: center; gap: var(--space-1); border: 1px solid transparent; border-radius: var(--radius); padding: 0.75rem 1rem; font-size: 0.875rem; font-weight: 600; line-height: 1.25; transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
+}
+.ui-button-primary { background: var(--source-teal); color: white; }
+.ui-button-primary:hover:not(:disabled) { background: var(--source-teal-dark); }
+.ui-button-secondary { border-color: var(--border); background: var(--surface); color: var(--source-teal); }
+.ui-button-secondary:hover:not(:disabled) { border-color: var(--source-teal); background: #f4f8f7; }
+.ui-button-inverse { border-color: rgb(255 255 255 / 0.45); background: transparent; color: var(--surface); }
+.ui-button-inverse:hover:not(:disabled) { border-color: var(--surface); background: var(--surface); color: var(--source-teal); }
+.ui-button-danger { border-color: color-mix(in srgb, var(--terracotta) 40%, var(--border)); background: var(--surface); color: #9a3926; }
+.ui-button-danger:hover:not(:disabled) { background: #fff1ee; }
+.ui-button-primary:disabled, .ui-button-secondary:disabled, .ui-button-inverse:disabled, .ui-button-danger:disabled { cursor: not-allowed; opacity: 0.55; }
+
+.ui-badge { display: inline-flex; align-items: center; gap: var(--space-1); border: 1px solid rgba(42, 157, 143, 0.25); border-radius: 999px; background: #edf7f5; padding: var(--space-1) var(--space-2); color: #20766b; font-size: 0.75rem; font-weight: 600; line-height: 1.25; }
+.ui-eyebrow { display: inline-flex; align-items: center; gap: var(--space-1); color: var(--source-teal); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.12em; line-height: 1.25; text-transform: uppercase; }
+.ui-eyebrow::before { width: 0.5rem; height: 0.5rem; border-radius: 999px; background: var(--verified-green); content: ""; }
+
+.page-title { color: var(--source-teal); font-size: clamp(2.5rem, 4vw, 4rem); font-weight: 600; letter-spacing: -0.055em; line-height: 1; }
+.section-title { color: var(--source-teal); font-size: clamp(1.75rem, 2.5vw, 2.5rem); font-weight: 600; letter-spacing: -0.035em; line-height: 1.1; }
+.body-large { color: var(--muted); font-size: 1.125rem; line-height: 1.75; }
+.source-quote { font-family: Georgia, "Times New Roman", serif; }
+
+@media (max-width: 640px) { .page-container { width: min(100% - 2rem, var(--container)); } }

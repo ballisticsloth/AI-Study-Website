@@ -1,10 +1,16 @@
 import { redirect } from "next/navigation";
+import type { Metadata } from "next";
 
 import { AssessmentsWorkspace } from "@/components/assessments-workspace";
 import { WorkspaceNav } from "@/components/workspace-nav";
 import { parseSavedAssessment } from "@/lib/assessments";
 import { type CourseSummary, type DocumentStatus, type DocumentSummary } from "@/lib/materials";
 import { createClient } from "@/lib/supabase/server";
+
+export const metadata: Metadata = {
+  title: "Assessments | StudySourced AI",
+  description: "Create, review, and edit assessments grounded in your selected course sources.",
+};
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -24,5 +30,10 @@ export default async function AssessmentsPage() {
   const courseItems: CourseSummary[] = (courses ?? []).map((course) => ({ id: course.id, title: course.title }));
   const documentItems: DocumentSummary[] = (documents ?? []).map((document) => ({ id: document.id, courseId: document.course_id, title: document.title, originalFilename: document.original_filename, storagePath: document.storage_path, mimeType: document.mime_type, byteSize: Number(document.byte_size), status: document.status as DocumentStatus, processingError: document.processing_error, createdAt: document.created_at }));
   const email = typeof claims.email === "string" ? claims.email : "";
-  return <main className="min-h-screen bg-[#f7f7f5] text-[#191919]"><WorkspaceNav active="assessments" avatarInitial={(email[0] ?? "A").toUpperCase()} /><AssessmentsWorkspace courses={courseItems} documents={documentItems} assessments={assessmentItems} /></main>;
+  return (
+    <main className="page-shell">
+      <WorkspaceNav active="assessments" avatarInitial={(email[0] ?? "A").toUpperCase()} />
+      <AssessmentsWorkspace courses={courseItems} documents={documentItems} assessments={assessmentItems} />
+    </main>
+  );
 }
