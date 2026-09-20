@@ -7,6 +7,7 @@ import OpenAI from "openai";
 
 import {
   AssessmentGenerationError,
+  OPENAI_ASSESSMENT_MODEL,
   type AssessmentLevel,
   type AssessmentSourcePassage,
   type AssessmentType,
@@ -14,6 +15,8 @@ import {
   generateOpenAiAssessment,
   resolveAssessmentGenerationMode,
 } from "@/lib/assessment-generation";
+import { getAiProviderErrorCode, getAiProviderErrorMessage } from "@/lib/ai-provider-errors";
+import { completeAiUsage, reserveAiUsage } from "@/lib/ai-usage-server";
 import { parseSavedAssessment, type SavedAssessment } from "@/lib/assessments";
 import { createClient } from "@/lib/supabase/server";
 
@@ -196,18 +199,40 @@ export async function generateAssessment(
 
   if (passages.length === 0) return { error: "No citation-ready passages were found in those sources." };
 
+  const model =
+    generationMode === "openai"
+      ? process.env.OPENAI_ASSESSMENT_MODEL ?? OPENAI_ASSESSMENT_MODEL
+      : "mock";
+  const reservation = await reserveAiUsage(authenticated.supabase as never, {
+    feature: "assessment_generation",
+    model,
+    generationMode,
+  });
+  if (!("usageEventId" in reservation)) return { error: reservation.error };
+
+  let usageWasFinalized = false;
+
   try {
     const generationInput = { ...input, topicFocus, passages };
-    const draft =
+    const generated =
       generationMode === "mock"
-        ? createMockAssessment(generationInput)
+        ? { draft: createMockAssessment(generationInput), usage: { inputTokens: 0, outputTokens: 0 } }
         : await generateOpenAiAssessment(
             new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) as unknown as Parameters<
               typeof generateOpenAiAssessment
             >[0],
             generationInput,
-            process.env.OPENAI_ASSESSMENT_MODEL,
+            model,
           );
+    const draft = generated.draft;
+
+    await completeAiUsage({
+      usageEventId: reservation.usageEventId,
+      status: "completed",
+      generationMode,
+      usage: generated.usage,
+    });
+    usageWasFinalized = true;
 
     const { data: material, error: materialError } = await authenticated.supabase
       .from("generated_materials")
@@ -256,11 +281,21 @@ export async function generateAssessment(
     revalidatePath("/assessments");
     return { assessment, generationMode };
   } catch (error) {
+    if (!usageWasFinalized) {
+      await completeAiUsage({
+        usageEventId: reservation.usageEventId,
+        status: "failed",
+        generationMode,
+        providerErrorCode: getAiProviderErrorCode(error),
+      });
+    }
+
     return {
       error:
-        error instanceof AssessmentGenerationError
+        getAiProviderErrorMessage(error) ??
+        (error instanceof AssessmentGenerationError
           ? error.message
-          : "We could not generate that assessment. Please try again.",
+          : "We could not generate that assessment. Please try again."),
     };
   }
 }

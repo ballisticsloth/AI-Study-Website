@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest";
 
 import {
   TutorGenerationError,
+  MAX_OPENAI_TUTOR_OUTPUT_TOKENS,
   createMockTutorReply,
+  generateOpenAiTutorReply,
   parseOpenAiTutorOutput,
   resolveTutorGenerationMode,
 } from "./tutor-generation";
@@ -97,5 +99,34 @@ describe("OpenAI tutor response validation", () => {
     expect(() => resolveTutorGenerationMode("mock", "production")).toThrow(
       "Mock tutor generation is available only during local development",
     );
+  });
+
+  it("caps output, uses low reasoning, and returns provider usage", async () => {
+    let request: unknown;
+    const reply = await generateOpenAiTutorReply(
+      {
+        responses: {
+          create: async (input: unknown) => {
+            request = input;
+            return {
+              output_text: JSON.stringify({
+                reply: "What detail in the passage answers your question?",
+                grounding: "course_material",
+                citation_indexes: [0],
+              }),
+              usage: { input_tokens: 80, output_tokens: 60 },
+            };
+          },
+        },
+      },
+      { question: "What does the cell membrane do?", passages, hasPriorAssistantReply: false },
+    );
+
+    expect(request).toMatchObject({
+      max_output_tokens: MAX_OPENAI_TUTOR_OUTPUT_TOKENS,
+      reasoning: { effort: "low" },
+    });
+    expect(reply.usage).toEqual({ inputTokens: 80, outputTokens: 60 });
+    expect(reply.reply.citations).toHaveLength(1);
   });
 });

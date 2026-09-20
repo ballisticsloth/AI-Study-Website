@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   AssessmentGenerationError,
+  MAX_OPENAI_ASSESSMENT_OUTPUT_TOKENS,
   createMockAssessment,
   generateOpenAiAssessment,
   parseOpenAiAssessmentOutput,
@@ -134,6 +135,7 @@ describe("assessment generation providers", () => {
           citation_indexes: [0],
         })),
       }),
+      usage: { input_tokens: 120, output_tokens: 340 },
     });
 
     const assessment = await generateOpenAiAssessment(
@@ -147,6 +149,45 @@ describe("assessment generation providers", () => {
       },
     );
 
-    expect(assessment.questions[0].citations[0].documentId).toBe(passages[0].documentId);
+    expect(assessment.draft.questions[0].citations[0].documentId).toBe(passages[0].documentId);
+    expect(assessment.usage).toEqual({ inputTokens: 120, outputTokens: 340 });
+  });
+
+  it("caps output and requests low reasoning effort", async () => {
+    let request: unknown;
+    const create = async (input: unknown) => {
+      request = input;
+      return {
+        output_text: JSON.stringify({
+          title: "Cells check",
+          directions: "Choose the best answer.",
+          questions: Array.from({ length: 3 }, () => ({
+            prompt: "What does the cell membrane do?",
+            question_type: "multiple_choice",
+            options: ["Controls entry and exit", "Stores sunlight", "Builds bones", "Makes weather"],
+            correct_answer: "Controls entry and exit",
+            explanation: "The passage says it controls entry and exit.",
+            citation_indexes: [0],
+          })),
+        }),
+        usage: { input_tokens: 12, output_tokens: 34 },
+      };
+    };
+
+    await generateOpenAiAssessment(
+      { responses: { create } },
+      {
+        type: "multiple_choice_test",
+        topicFocus: "cell membrane",
+        questionCount: 3,
+        level: "Standard",
+        passages: [passages[0]],
+      },
+    );
+
+    expect(request).toMatchObject({
+      max_output_tokens: MAX_OPENAI_ASSESSMENT_OUTPUT_TOKENS,
+      reasoning: { effort: "low" },
+    });
   });
 });

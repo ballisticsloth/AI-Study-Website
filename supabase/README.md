@@ -95,14 +95,14 @@ accepts the legacy `SUPABASE_SERVICE_ROLE_KEY` locally. Prefer a new secret key
 when one is available.
 
 The current pre-alpha parser runs synchronously after upload and is capped at
-20 MB, 250 PDF pages, 500,000 extracted characters, and 350 source passages.
+10 MB, 100 PDF pages, 500,000 extracted characters, and 350 source passages.
 Before production deployment, move the same processing logic into a durable
 background job so a hosted request does not need to wait for parsing.
 
 ## Verify the private material bucket
 
 Open **Storage** > **course-materials** in the Supabase Dashboard and confirm
-that the bucket remains private. Its file limit should be **20 MB**, and its
+that the bucket remains private. Its file limit should be **10 MB**, and its
 allowed MIME types should be exactly:
 
 - `application/pdf`

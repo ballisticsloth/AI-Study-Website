@@ -172,7 +172,7 @@ export async function prepareDocumentUpload(
     input.byteSize < 1 ||
     input.byteSize > MAX_DOCUMENT_SIZE_BYTES
   ) {
-    return { error: "Files must be between 1 byte and 20 MB." };
+    return { error: "Files must be between 1 byte and 10 MB." };
   }
 
   const { data: course, error: courseError } = await authenticated.supabase

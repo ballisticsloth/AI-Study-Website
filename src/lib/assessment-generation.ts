@@ -1,6 +1,9 @@
+import { readOpenAiUsage, type AiTokenUsage } from "@/lib/ai-usage";
+
 export const MIN_ASSESSMENT_QUESTION_COUNT = 3;
 export const MAX_ASSESSMENT_QUESTION_COUNT = 10;
 export const OPENAI_ASSESSMENT_MODEL = "gpt-5.6";
+export const MAX_OPENAI_ASSESSMENT_OUTPUT_TOKENS = 2_500;
 
 export type AssessmentType = "multiple_choice_test" | "worksheet";
 export type AssessmentLevel = "Foundational" | "Standard" | "Challenge";
@@ -49,10 +52,17 @@ export type AssessmentGenerationInput = {
 
 export type AssessmentGenerationMode = "openai" | "mock";
 
+export type OpenAiAssessmentResult = {
+  draft: AssessmentDraft;
+  usage: AiTokenUsage;
+};
+
 export type OpenAiAssessmentClient = {
   responses: {
     create: (input: {
       model: string;
+      max_output_tokens: number;
+      reasoning: { effort: "low" };
       input: Array<{ role: "system" | "user"; content: string }>;
       text: {
         format: {
@@ -62,7 +72,7 @@ export type OpenAiAssessmentClient = {
           schema: typeof assessmentStructuredOutputSchema;
         };
       };
-    }) => Promise<{ output_text: string }>;
+    }) => Promise<{ output_text: string; usage?: unknown }>;
   };
 };
 
@@ -390,6 +400,8 @@ export async function generateOpenAiAssessment(
 ) {
   const response = await client.responses.create({
     model,
+    max_output_tokens: MAX_OPENAI_ASSESSMENT_OUTPUT_TOKENS,
+    reasoning: { effort: "low" },
     input: [
       {
         role: "system",
@@ -408,5 +420,8 @@ export async function generateOpenAiAssessment(
     },
   });
 
-  return parseOpenAiAssessmentOutput(response.output_text, input);
+  return {
+    draft: parseOpenAiAssessmentOutput(response.output_text, input),
+    usage: readOpenAiUsage(response.usage),
+  };
 }

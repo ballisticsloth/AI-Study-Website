@@ -2,12 +2,15 @@ import OpenAI from "openai";
 
 import { searchSourcePassages } from "@/app/materials/retrieval-actions";
 import {
+  OPENAI_TUTOR_MODEL,
   TutorGenerationError,
   createMockTutorReply,
   generateOpenAiTutorReply,
   resolveTutorGenerationMode,
   type TutorSourcePassage,
 } from "@/lib/tutor-generation";
+import { getAiProviderErrorCode, getAiProviderErrorMessage } from "@/lib/ai-provider-errors";
+import { completeAiUsage, reserveAiUsage } from "@/lib/ai-usage-server";
 import { hasPriorGroundedTutorReply } from "@/lib/tutor-history";
 import { TutorRequestError, validateTutorMessageRequest } from "@/lib/tutor-request";
 import { createTutorEventStream, type TutorStreamEvent } from "@/lib/tutor-stream";
@@ -40,6 +43,9 @@ function errorResponse(message: string, status = 400) {
  * that each document is still a ready document in the current user's course.
  */
 export async function POST(request: Request) {
+  let reservedAiUsage: { usageEventId: string; generationMode: "mock" | "openai" } | null = null;
+  let usageWasFinalized = false;
+
   try {
     let body: unknown;
     try {
@@ -136,6 +142,15 @@ export async function POST(request: Request) {
       throw new TutorRouteError("Tutor AI is not configured yet. Add the server-only OpenAI API key, then try again.");
     }
 
+    const model = generationMode === "openai" ? process.env.OPENAI_TUTOR_MODEL ?? OPENAI_TUTOR_MODEL : "mock";
+    const reservation = await reserveAiUsage(supabase as never, {
+      feature: "tutor_message",
+      model,
+      generationMode,
+    });
+    if (!("usageEventId" in reservation)) throw new TutorRouteError(reservation.error);
+    reservedAiUsage = { usageEventId: reservation.usageEventId, generationMode };
+
     const { error: userMessageError } = await supabase.from("tutor_messages").insert({
       conversation_id: conversation.id,
       role: "user",
@@ -176,14 +191,17 @@ export async function POST(request: Request) {
       content: passage.content,
     }));
 
-    const reply =
+    const generated =
       generationMode === "mock"
-        ? createMockTutorReply({
-            question: input.message,
-            passages,
-            hasPriorAssistantReply,
-            recentMessages,
-          })
+        ? {
+            reply: createMockTutorReply({
+              question: input.message,
+              passages,
+              hasPriorAssistantReply,
+              recentMessages,
+            }),
+            usage: { inputTokens: 0, outputTokens: 0 },
+          }
         : await generateOpenAiTutorReply(
             new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) as unknown as Parameters<
               typeof generateOpenAiTutorReply
@@ -194,8 +212,17 @@ export async function POST(request: Request) {
               hasPriorAssistantReply,
               recentMessages,
             },
-            process.env.OPENAI_TUTOR_MODEL,
+            model,
           );
+    const reply = generated.reply;
+
+    await completeAiUsage({
+      usageEventId: reservedAiUsage.usageEventId,
+      status: "completed",
+      generationMode,
+      usage: generated.usage,
+    });
+    usageWasFinalized = true;
 
     const { data: assistantMessage, error: assistantMessageError } = await supabase
       .from("tutor_messages")
@@ -251,10 +278,20 @@ export async function POST(request: Request) {
       },
     });
   } catch (error) {
+    if (reservedAiUsage && !usageWasFinalized) {
+      await completeAiUsage({
+        usageEventId: reservedAiUsage.usageEventId,
+        status: "failed",
+        generationMode: reservedAiUsage.generationMode,
+        providerErrorCode: getAiProviderErrorCode(error),
+      });
+    }
+
     const message =
-      error instanceof TutorRouteError || error instanceof TutorGenerationError
+      getAiProviderErrorMessage(error) ??
+      (error instanceof TutorRouteError || error instanceof TutorGenerationError
         ? error.message
-        : "We could not prepare a tutor response. Please try again.";
+        : "We could not prepare a tutor response. Please try again.");
     return errorResponse(message);
   }
 }

@@ -185,7 +185,7 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
 
     if (nextFile.size > MAX_DOCUMENT_SIZE_BYTES) {
       setFile(null);
-      setNotice({ tone: "error", message: "Choose a file that is 20 MB or smaller." });
+      setNotice({ tone: "error", message: "Choose a file that is 10 MB or smaller." });
       return;
     }
 
@@ -417,7 +417,7 @@ export function MaterialsWorkspace({ initialCourses, documents }: MaterialsWorks
             <div>
               <p className="ui-eyebrow">Add to your library</p>
               <h2 className="mt-4 text-xl font-semibold text-[var(--source-teal)]">Add a course source</h2>
-              <p className="mt-2 text-sm leading-6 text-[var(--muted)]">PDF, DOCX, or TXT · up to 20 MB</p>
+              <p className="mt-2 text-sm leading-6 text-[var(--muted)]">PDF, DOCX, or TXT · up to 10 MB · PDFs up to 100 pages</p>
             </div>
             {isBusy ? (
               <span className="text-sm font-semibold text-[#264653]">

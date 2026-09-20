@@ -4,7 +4,7 @@ import mammoth from "mammoth";
 import { parseFragment } from "parse5";
 import { extractText, getDocumentProxy } from "unpdf";
 
-export const MAX_PDF_PAGES = 250;
+export const MAX_PDF_PAGES = 100;
 export const MAX_EXTRACTED_CHARACTERS = 500_000;
 export const MAX_DOCUMENT_SECTIONS = 500;
 export const MAX_DOCUMENT_CHUNKS = 350;

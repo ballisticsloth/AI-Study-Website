@@ -1,5 +1,8 @@
+import { readOpenAiUsage, type AiTokenUsage } from "@/lib/ai-usage";
+
 export const OPENAI_TUTOR_MODEL = "gpt-5.6";
 export const MAX_TUTOR_MESSAGE_LENGTH = 2_000;
+export const MAX_OPENAI_TUTOR_OUTPUT_TOKENS = 700;
 
 export type TutorGenerationMode = "openai" | "mock";
 
@@ -27,6 +30,11 @@ export type TutorReply = {
   citations: TutorCitation[];
 };
 
+export type OpenAiTutorResult = {
+  reply: TutorReply;
+  usage: AiTokenUsage;
+};
+
 export type TutorGenerationInput = {
   question: string;
   passages: TutorSourcePassage[];
@@ -38,6 +46,8 @@ export type OpenAiTutorClient = {
   responses: {
     create: (input: {
       model: string;
+      max_output_tokens: number;
+      reasoning: { effort: "low" };
       input: Array<{ role: "system" | "user"; content: string }>;
       text: {
         format: {
@@ -47,7 +57,7 @@ export type OpenAiTutorClient = {
           schema: typeof tutorStructuredOutputSchema;
         };
       };
-    }) => Promise<{ output_text: string }>;
+    }) => Promise<{ output_text: string; usage?: unknown }>;
   };
 };
 
@@ -251,11 +261,16 @@ export async function generateOpenAiTutorReply(
   const prompt = buildOpenAiTutorPrompt(input);
   const response = await client.responses.create({
     model,
+    max_output_tokens: MAX_OPENAI_TUTOR_OUTPUT_TOKENS,
+    reasoning: { effort: "low" },
     input: [
       { role: "system", content: prompt.system },
       { role: "user", content: prompt.user },
     ],
     text: { format: { type: "json_schema", name: "tutor_reply", strict: true, schema: tutorStructuredOutputSchema } },
   });
-  return parseOpenAiTutorOutput(response.output_text, input.passages);
+  return {
+    reply: parseOpenAiTutorOutput(response.output_text, input.passages),
+    usage: readOpenAiUsage(response.usage),
+  };
 }

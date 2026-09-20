@@ -1,6 +1,6 @@
 export const COURSE_MATERIALS_BUCKET = "course-materials";
-export const MAX_DOCUMENT_SIZE_BYTES = 20 * 1024 * 1024;
-export const RESUMABLE_UPLOAD_THRESHOLD_BYTES = 6 * 1024 * 1024;
+export const MAX_DOCUMENT_SIZE_BYTES = 10 * 1024 * 1024;
+export const RESUMABLE_UPLOAD_THRESHOLD_BYTES = 5 * 1024 * 1024;
 
 export const SUPPORTED_DOCUMENT_TYPES = {
   pdf: {

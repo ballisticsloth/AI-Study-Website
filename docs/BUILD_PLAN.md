@@ -132,7 +132,7 @@ verified. A milestone is complete only when its exit criteria are checked.
 
 - [x] Test the upload and source-processing flow with prepared PDF, DOCX, and TXT files.
 - [ ] Test with a small invited group creating real accounts and uploading their own allowed materials.
-- [ ] Add clear failure states, upload limits, generation quotas, and basic abuse/cost safeguards.
+- [ ] Add clear failure states, upload limits, generation quotas, and basic abuse/cost safeguards. *(Implemented locally; awaiting migration push and manual verification.)*
 - [ ] Run accessibility and print-layout checks.
 - [ ] Fix the highest-impact defects and publish the pre-alpha feedback form.
 
@@ -237,6 +237,9 @@ Use this order to avoid building UI against unstable assumptions:
 - Use invite-only or allowlisted sign-up while testing with the selected group.
 - Limit upload type, file size, pages/characters processed, and number of documents per account.
 - Cap daily assessment-generation and tutor requests per tester.
+- Enforce a 5-per-day assessment cap and a 30-per-day tutor-message cap in the database; reset at midnight UTC.
+- Log feature, user, model, token usage, estimated cost, status, and provider error code without retaining prompts or source text.
+- Keep Responses API calls on low reasoning effort with capped output tokens; display a friendly message when the provider reaches its credit or project-spend limit.
 - Use the lower-cost model route for routine generation and reserve higher-capability requests for cases where evaluation proves the need.
 - Monitor usage and errors during the pre-alpha; reduce limits only with a clear user-facing message.
 
