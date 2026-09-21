@@ -72,6 +72,16 @@ function cleanText(value: unknown, maximumLength: number) {
   return typeof value === "string" ? value.trim().replace(/\s+/g, " ").slice(0, maximumLength) : "";
 }
 
+function cleanTutorReplyText(value: unknown) {
+  return cleanText(value, 4_000)
+    .replace(/\\([*_`])/g, "$1")
+    .replace(/(\*\*|__)(.+?)\1/g, "$2")
+    .replace(/([*_])([^*_]+?)\1/g, "$2")
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function sourceCitation(passage: TutorSourcePassage): TutorCitation {
   return {
     sourceChunkId: passage.id,
@@ -199,7 +209,7 @@ export function parseOpenAiTutorOutput(output: string, passages: TutorSourcePass
   }
   if (!parsed || typeof parsed !== "object") throw new TutorGenerationError();
   const value = parsed as Record<string, unknown>;
-  const content = cleanText(value.reply, 4_000);
+  const content = cleanTutorReplyText(value.reply);
   const grounding = value.grounding;
   if (!content || (grounding !== "course_material" && grounding !== "general_knowledge")) {
     throw new TutorGenerationError();
@@ -244,9 +254,12 @@ export function buildOpenAiTutorPrompt(input: TutorGenerationInput) {
     system:
       "You are a guidance-first study tutor. Help the learner reason before revealing a full answer. " +
       "On an early turn, give a focused hint and ask a check-for-understanding question. " +
+      "On the learner's first source-grounded turn, make that hint indirect: do not name the answer, list candidate answers, quote the answer sentence, or identify the source term that directly answers the question. " +
       "After the learner has attempted an answer or explicitly asks for an explanation, give a concise explanation and another reflection question. " +
       "Use course_material only when the retrieved passages directly support the reply, and select only their citation indexes. " +
-      "Use general_knowledge with an empty citation_indexes when no passage supports the reply; state that limitation in the reply. Never invent citations or source facts.",
+      "Use the fewest citations needed, normally one, and prefer a focused passage over a broad comparison table. " +
+      "Use general_knowledge with an empty citation_indexes when no passage supports the reply; state that limitation in the reply. " +
+      "Return plain text only: do not use Markdown, asterisks, underscores, headings, or lists. Never invent citations or source facts.",
     user:
       `Learner question: ${validated.question}\n\nEarlier conversation:\n${history || "(none)"}\n\nRetrieved passages:\n${sourceBlock(validated.passages) || "(none)"}`,
   };

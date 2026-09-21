@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   TutorGenerationError,
   MAX_OPENAI_TUTOR_OUTPUT_TOKENS,
+  buildOpenAiTutorPrompt,
   createMockTutorReply,
   generateOpenAiTutorReply,
   parseOpenAiTutorOutput,
@@ -65,6 +66,18 @@ describe("createMockTutorReply", () => {
 });
 
 describe("OpenAI tutor response validation", () => {
+  it("instructs the first grounded tutor turn to hint without naming the answer", () => {
+    const prompt = buildOpenAiTutorPrompt({
+      question: "What part of the cell releases usable energy from food?",
+      passages,
+      hasPriorAssistantReply: false,
+    });
+
+    expect(prompt.system).toContain("do not name the answer");
+    expect(prompt.system).toContain("list candidate answers");
+    expect(prompt.system).toContain("quote the answer sentence");
+  });
+
   it("maps model citation indexes onto trusted retrieved passages", () => {
     const reply = parseOpenAiTutorOutput(
       JSON.stringify({
@@ -79,6 +92,19 @@ describe("OpenAI tutor response validation", () => {
       sourceChunkId: passages[0].id,
       documentId: passages[0].documentId,
     });
+  });
+
+  it("returns plain text when a model reply contains Markdown emphasis", () => {
+    const reply = parseOpenAiTutorOutput(
+      JSON.stringify({
+        reply: "The \\*\\*mitochondrion\\*\\* releases usable energy, not the *nucleus*.",
+        grounding: "course_material",
+        citation_indexes: [0],
+      }),
+      passages,
+    );
+
+    expect(reply.content).toBe("The mitochondrion releases usable energy, not the nucleus.");
   });
 
   it("rejects a sourced response without a valid trusted source index", () => {

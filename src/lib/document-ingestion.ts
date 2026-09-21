@@ -96,10 +96,77 @@ function isHeadingNode(node: HtmlNode) {
 }
 
 function isTextBlockNode(node: HtmlNode) {
-  return ["p", "li", "td", "th", "blockquote", "pre"].includes(node.tagName ?? "");
+  return ["p", "li", "blockquote", "pre"].includes(node.tagName ?? "");
 }
 
-function extractDocxSectionsFromHtml(html: string): ExtractedDocumentSection[] {
+function isTableNode(node: HtmlNode) {
+  return node.tagName === "table";
+}
+
+function hasDescendantTag(node: HtmlNode, tagName: string): boolean {
+  return (
+    node.tagName === tagName ||
+    (node.childNodes ?? []).some((child) => hasDescendantTag(child, tagName))
+  );
+}
+
+type HtmlTableCell = {
+  text: string;
+  isHeader: boolean;
+};
+
+function extractHtmlTableRows(table: HtmlNode): HtmlTableCell[][] {
+  const rows: HtmlTableCell[][] = [];
+
+  function collectCells(node: HtmlNode, cells: HtmlTableCell[]) {
+    if (node.tagName === "td" || node.tagName === "th") {
+      const text = normalizeInlineText(textFromHtmlNode(node));
+      if (text) {
+        cells.push({ text, isHeader: node.tagName === "th" || hasDescendantTag(node, "strong") });
+      }
+      return;
+    }
+
+    for (const child of node.childNodes ?? []) {
+      collectCells(child, cells);
+    }
+  }
+
+  function visit(node: HtmlNode) {
+    if (node.tagName === "tr") {
+      const cells: HtmlTableCell[] = [];
+      collectCells(node, cells);
+      if (cells.length) rows.push(cells);
+      return;
+    }
+
+    for (const child of node.childNodes ?? []) {
+      visit(child);
+    }
+  }
+
+  visit(table);
+  return rows;
+}
+
+function formatHtmlTable(table: HtmlNode) {
+  const rows = extractHtmlTableRows(table);
+  if (!rows.length) return "";
+
+  const headerRowIndex = rows.findIndex((row) => row.length > 0 && row.every((cell) => cell.isHeader));
+  const headers = headerRowIndex >= 0 ? rows[headerRowIndex].map((cell) => cell.text) : null;
+
+  return rows
+    .filter((_, index) => index !== headerRowIndex)
+    .map((row) =>
+      row
+        .map((cell, index) => (headers?.[index] ? `${headers[index]}: ${cell.text}` : cell.text))
+        .join(" | "),
+    )
+    .join("\n");
+}
+
+export function extractDocxSectionsFromHtml(html: string): ExtractedDocumentSection[] {
   const fragment = parseFragment(html) as unknown as { childNodes: HtmlNode[] };
   const sections: ExtractedDocumentSection[] = [];
   const headingLevels: Array<string | null> = [null, null, null, null, null, null];
@@ -142,6 +209,16 @@ function extractDocxSectionsFromHtml(html: string): ExtractedDocumentSection[] {
 
       if (isTextBlockNode(node)) {
         const text = normalizeSourceText(textFromHtmlNode(node));
+
+        if (text) {
+          currentSection.textParts.push(text);
+        }
+
+        continue;
+      }
+
+      if (isTableNode(node)) {
+        const text = formatHtmlTable(node);
 
         if (text) {
           currentSection.textParts.push(text);

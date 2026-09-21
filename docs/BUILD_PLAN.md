@@ -132,7 +132,7 @@ verified. A milestone is complete only when its exit criteria are checked.
 
 - [x] Test the upload and source-processing flow with prepared PDF, DOCX, and TXT files.
 - [ ] Test with a small invited group creating real accounts and uploading their own allowed materials.
-- [ ] Add clear failure states, upload limits, generation quotas, and basic abuse/cost safeguards. *(Implemented locally; awaiting migration push and manual verification.)*
+- [x] Add clear failure states, upload limits, generation quotas, and basic abuse/cost safeguards.
 - [ ] Run accessibility and print-layout checks.
 - [ ] Fix the highest-impact defects and publish the pre-alpha feedback form.
 
